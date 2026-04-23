@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Bias Testing Tool</title>
+<!--
+  AI Bias Testing Tool
+  Disparate impact analysis for AI systems
+
+  MIT License
+
+  Copyright (c) 2026 Jason Wemer
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+  Repository: https://github.com/jasonanwe/bias-testing-app
+-->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#f9fafb;color:#111827;line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:2rem 1rem}
+.text-center{text-align:center}
+h1{font-size:1.5rem;font-weight:700;color:#111827}
+h2{font-size:1.125rem;font-weight:700;color:#111827;margin-bottom:1rem}
+.subtitle{font-size:.875rem;color:#6b7280;margin-top:.25rem}
+.basis{font-size:.75rem;color:#9ca3af;margin-top:.125rem}
+
+/* Steps indicator */
+.steps{display:flex;align-items:center;justify-content:center;gap:4px;margin:2rem 0;flex-wrap:wrap}
+.step-btn{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:9999px;font-size:.75rem;font-weight:500;border:none;cursor:default;transition:all .2s}
+.step-btn.active{background:#2563eb;color:#fff}
+.step-btn.done{background:#dbeafe;color:#1d4ed8;cursor:pointer}
+.step-btn.done:hover{background:#bfdbfe}
+.step-btn.pending{background:#f3f4f6;color:#9ca3af}
+.step-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem}
+.step-btn.active .step-num{background:rgba(255,255,255,.2)}
+.step-sep{width:16px;height:1px;margin:0 2px}
+.step-sep.done{background:#93c5fd}
+.step-sep.pending{background:#e5e7eb}
+
+/* Card */
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+
+/* Form elements */
+label{display:block;font-size:.875rem;font-weight:500;color:#374151;margin-bottom:.25rem}
+input[type="text"],input[type="number"],input[type="date"],select{width:100%;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:.875rem;font-family:inherit;color:#111827;background:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,.3)}
+.input-center{text-align:center}
+.field{margin-bottom:1rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.hint{font-size:.75rem;color:#6b7280;margin-top:.5rem}
+.desc{font-size:.875rem;color:#4b5563;margin-bottom:1rem}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th{background:#f3f4f6;padding:.75rem 1rem;text-align:center;font-weight:500;color:#374151}
+th:first-child{text-align:left}
+td{padding:.75rem 1rem;border-top:1px solid #f3f4f6}
+td:first-child{font-weight:500;color:#374151}
+.tbl-wrap{border:1px solid #e5e7eb;border-radius:.75rem;overflow:hidden;margin-bottom:1rem}
+
+/* Metric cards */
+.metric-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+.metric-box{border:1px solid #e5e7eb;border-radius:.75rem;padding:1rem}
+.metric-label{font-size:.75rem;font-weight:500;color:#6b7280;text-transform:uppercase;letter-spacing:.05em}
+.metric-val{font-size:1.875rem;font-family:'DM Sans',monospace;font-weight:700}
+.metric-sub{font-size:.875rem;font-weight:500}
+.metric-box.sev{border-width:2px}
+
+/* Info box */
+.info{background:#f9fafb;border:1px solid #e5e7eb;border-radius:.75rem;padding:1rem;font-size:.875rem;color:#374151;margin-bottom:1.25rem}
+.info .info-title{font-weight:500;margin-bottom:.25rem}
+
+/* Test result cards */
+.test-card{border:1px solid #e5e7eb;border-radius:.75rem;padding:1rem;margin-bottom:.75rem}
+.test-card.disabled{border-color:#f3f4f6;opacity:.6}
+.test-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem}
+.test-name{font-weight:500;color:#1f2937}
+.badge{padding:4px 12px;border-radius:9999px;font-size:.75rem;font-weight:500}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-gray{background:#f3f4f6;color:#6b7280}
+.test-note{font-size:.75rem;color:#6b7280}
+.test-stat{font-size:.75rem;color:#4b5563;font-family:monospace;margin-top:.25rem}
+
+/* Context buttons */
+.ctx-group{margin-bottom:1.25rem}
+.ctx-opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+.ctx-btn{padding:.75rem;border-radius:.5rem;font-size:.75rem;text-align:left;border:1px solid #e5e7eb;background:#fff;color:#374151;cursor:pointer;transition:all .15s;font-family:inherit;line-height:1.4}
+.ctx-btn:hover{border-color:#9ca3af}
+.ctx-btn.selected{border-color:#3b82f6;background:#eff6ff;color:#1e40af;box-shadow:0 0 0 1px #93c5fd}
+
+/* Classification */
+.class-box{border-width:2px;border-style:solid;border-radius:1rem;padding:1.5rem;text-align:center;margin-bottom:1.25rem}
+.class-label{font-size:.875rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.class-val{font-size:3rem;font-weight:700}
+.breakdown{border:1px solid #e5e7eb;border-radius:.75rem;padding:1rem;font-size:.875rem;margin-bottom:1.25rem}
+.breakdown-title{font-weight:500;color:#1f2937;margin-bottom:.75rem}
+.bk-row{display:flex;justify-content:space-between;margin-bottom:.25rem;color:#374151}
+.bk-row span:last-child{font-weight:500}
+.bk-divider{border-top:1px solid #e5e7eb;padding-top:.5rem;margin-top:.5rem}
+
+/* Report */
+.report{border:1px solid #e5e7eb;border-radius:.75rem;padding:1.25rem;font-size:.875rem;background:#fff;margin-bottom:1rem}
+.report-header{text-align:center;border-bottom:1px solid #e5e7eb;padding-bottom:1rem;margin-bottom:1rem}
+.report-title{font-size:1.125rem;font-weight:700;color:#111827}
+.report-org{font-size:.875rem;color:#4b5563}
+.report-date{font-size:.75rem;color:#9ca3af}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:1rem}
+.report-grid span:first-child{color:#6b7280}
+.report-grid .val{font-weight:500}
+.report-section{border-top:1px solid #e5e7eb;padding-top:.75rem;margin-top:.75rem}
+.report-section-title{font-size:.75rem;font-weight:500;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+.stat-box{background:#f9fafb;border-radius:.375rem;padding:.5rem;font-size:.75rem}
+.stat-box .stat-name{font-weight:500}
+.stat-box .stat-val{font-family:monospace}
+.report-final{display:flex;align-items:center;gap:.75rem}
+.report-final-label{font-size:.75rem;color:#6b7280}
+.report-final-badge{padding:.5rem 1rem;border-radius:.5rem;font-weight:700;font-size:1.125rem;border-width:2px;border-style:solid}
+.report-methodology{font-size:.75rem;color:#6b7280;line-height:1.5}
+.report-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:.5rem}
+.report-metrics div span:first-child{display:block;font-size:.75rem;color:#6b7280}
+.report-metrics .big{font-family:monospace;font-weight:700;font-size:1.125rem}
+
+/* Buttons */
+.btn-row{display:flex;justify-content:space-between}
+.btn{padding:.625rem 1.25rem;border-radius:.5rem;font-size:.875rem;font-weight:500;border:none;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-primary{background:#2563eb;color:#fff}.btn-primary:hover{background:#1d4ed8}
+.btn-primary:disabled{background:#e5e7eb;color:#9ca3af;cursor:not-allowed}
+.btn-secondary{background:#fff;color:#374151;border:1px solid #d1d5db}.btn-secondary:hover{background:#f9fafb}
+.btn-secondary:disabled{color:#d1d5db;cursor:not-allowed;border-color:#e5e7eb}
+.btn-dark{background:#1f2937;color:#fff}.btn-dark:hover{background:#374151}
+.btn-group{display:flex;gap:.75rem}
+
+/* Threshold dots */
+.thresh-table{width:100%;font-size:.875rem;margin-top:.25rem}
+.thresh-table th{font-size:.75rem;color:#6b7280;font-weight:400;padding:.25rem}
+.thresh-table td{padding:.25rem;text-align:center}
+.thresh-table td:first-child{text-align:left;color:#374151}
+.dot{display:inline-block;width:20px;height:20px;border-radius:50%}
+.dot.active{box-shadow:0 0 0 2px #fff,0 0 0 4px currentColor}
+.dot.dim{opacity:.3}
+
+/* Footer */
+.footer{margin-top:2rem;text-align:center;font-size:.75rem;color:#9ca3af;line-height:1.8}
+.footer a{color:#3b82f6;text-decoration:underline}
+.footer a:hover{color:#2563eb}
+
+/* Print */
+@media print{body{background:#fff}.container{max-width:100%}.steps,.btn-row,.btn-group,.footer{display:none!important}.card{box-shadow:none;border:1px solid #ccc}}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr}.ctx-opts{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}.report-grid{grid-template-columns:1fr}.report-metrics{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <div class="text-center" style="margin-bottom:2rem">
+    <h1>AI Bias Testing Tool</h1>
+    <div class="subtitle">Disparate impact analysis for AI systems</div>
+    <div class="basis">Based on NIST AI RMF 1.0, EEOC Uniform Guidelines (29 CFR 1607.4), and NIST SP 1270</div>
+  </div>
+  <div class="steps" id="steps-bar"></div>
+  <div class="card" id="step-content"></div>
+  <div class="btn-row" id="nav-buttons"></div>
+  <div class="footer">
+    <p>Open source under MIT License. Free for use by anyone.</p>
+    <p>Methodology: NIST AI RMF 1.0, NIST SP 1270, EEOC Uniform Guidelines (29 CFR 1607.4), EEOC Technical Assistance on AI and Title VII.</p>
+    <p>Questions, feedback, or contributions: <a href="https://github.com/jasonanwe/bias-testing-app" target="_blank" rel="noopener">jasonanwe/bias-testing-app</a></p>
+  </div>
+</div>
+
+<script>
+const STEPS=["System Info","Group Data","Metrics","Statistics","Context","Classification","Report"];
+const SEV={None:{bg:"#e8f5e9",text:"#1b5e20",border:"#4caf50"},Low:{bg:"#fff8e1",text:"#e65100",border:"#ffa000"},Moderate:{bg:"#fff3e0",text:"#bf360c",border:"#e65100"},Critical:{bg:"#ffebee",text:"#b71c1c",border:"#c62828"}};
+
+let state={step:0,agencyName:"",sysName:"",regId:"",owner:"",testDate:new Date().toISOString().slice(0,10),testType:"Pre-Deployment",groupAName:"Group A",groupBName:"Group B",groupAPos:"",groupANeg:"",groupBPos:"",groupBNeg:"",context:{decisionType:0,affectedPop:0,scale:0,reversibility:0}};
+
+function val(id){const el=document.getElementById(id);return el?el.value:"";}
+function sync(){state.agencyName=val("f-agency");state.sysName=val("f-sysname");state.regId=val("f-regid");state.owner=val("f-owner");state.testDate=val("f-date");state.testType=val("f-type");state.groupAName=val("f-ga")||"Group A";state.groupBName=val("f-gb")||"Group B";state.groupAPos=val("f-ap");state.groupANeg=val("f-an");state.groupBPos=val("f-bp");state.groupBNeg=val("f-bn");}
+
+function nums(){const a=parseInt(state.groupAPos)||0,b=parseInt(state.groupANeg)||0,c=parseInt(state.groupBPos)||0,d=parseInt(state.groupBNeg)||0;return{a,b,c,d,n1:a+b,n2:c+d};}
+function rates(){const{a,b,c,d,n1,n2}=nums();return{rateA:n1>0?a/n1:0,rateB:n2>0?c/n2:0,n1,n2,a,b,c,d};}
+function calcDI(){const{rateA,rateB}=rates();if(rateA===0&&rateB===0)return 0;return rateB>0?(rateA<rateB?rateA/rateB:rateB/rateA):0;}
+function classifyDI(r){if(r>=.9)return"None";if(r>=.8)return"Low";if(r>=.65)return"Moderate";return"Critical";}
+
+function logFact(n){let r=0;for(let i=2;i<=n;i++)r+=Math.log(i);return r;}
+function fisherExact(a,b,c,d){const n=a+b+c+d;const ld=logFact(a+b)+logFact(c+d)+logFact(a+c)+logFact(b+d)-logFact(n);const pc=ld-(logFact(a)+logFact(b)+logFact(c)+logFact(d));let p=0;const mx=Math.min(a+b,a+c);for(let i=0;i<=mx;i++){const j=(a+b)-i,k=(a+c)-i,l=(c+d)-k;if(j<0||k<0||l<0)continue;const lp=ld-(logFact(i)+logFact(j)+logFact(k)+logFact(l));if(lp<=pc+1e-10)p+=Math.exp(lp);}return Math.min(p,1);}
+function erf(x){const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+p*x);return s*(1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x));}
+function chi2(a,b,c,d){const n=a+b+c+d;const e1=((a+b)*(a+c))/n,e2=((a+b)*(b+d))/n,e3=((c+d)*(a+c))/n,e4=((c+d)*(b+d))/n;if(e1<5||e2<5||e3<5||e4<5)return{valid:false,stat:0,p:1};const s=((a-e1)**2)/e1+((b-e2)**2)/e2+((c-e3)**2)/e3+((d-e4)**2)/e4;return{valid:true,stat:s,p:1-erf(Math.sqrt(s/2))};}
+function zTest(p1,n1,p2,n2){if(n1<30||n2<30)return{valid:false,z:0,p:1};const ph=(p1*n1+p2*n2)/(n1+n2);const se=Math.sqrt(ph*(1-ph)*(1/n1+1/n2));if(se===0)return{valid:true,z:0,p:1};const z=(p1-p2)/se;return{valid:true,z,p:2*(1-.5*(1+erf(Math.abs(z)/Math.sqrt(2))))};}
+function fmtP(p){return p<.001?"< 0.001":p.toFixed(4);}
+function pLabel(p){return p<=.01?"(highly significant)":p<=.05?"(significant)":p<=.10?"(marginal)":"(not significant)";}
+function pBadge(p){return p<=.05?"badge-red":p<=.10?"badge-amber":"badge-green";}
+
+function bestP(){const{a,b,c,d,n1,n2}=nums();const{rateA,rateB}=rates();if(n1===0||n2===0)return 1;const fp=fisherExact(a,b,c,d);const cr=chi2(a,b,c,d);const zr=zTest(rateA,n1,rateB,n2);return Math.min(fp,cr.valid?cr.p:1,zr.valid?zr.p:1);}
+function ctxMax(){return Math.max(state.context.decisionType,state.context.affectedPop,state.context.scale,state.context.reversibility);}
+function finalClass(){const q=classifyDI(calcDI());if(q==="None")return"None";const lvl=["None","Low","Moderate","Critical"];let i=lvl.indexOf(q);i=Math.min(i+ctxMax(),3);const bp=bestP();if(bp>.10)i=Math.max(i-1,0);else if(bp<=.01)i=Math.min(i+1,3);return lvl[i];}
+
+function canProceed(){if(state.step===0)return state.sysName&&state.owner;if(state.step===1){const{n1,n2}=nums();return n1>0&&n2>0;}return true;}
+
+function renderSteps(){const bar=document.getElementById("steps-bar");let h="";STEPS.forEach((s,i)=>{const cls=i===state.step?"active":i<state.step?"done":"pending";h+=`<button class="step-btn ${cls}" onclick="${i<state.step?`goStep(${i})`:""}"><span class="step-num">${i<state.step?"\u2713":i+1}</span><span class="step-label">${s}</span></button>`;if(i<STEPS.length-1)h+=`<div class="step-sep ${i<state.step?"done":"pending"}"></div>`;});bar.innerHTML=h;}
+
+function renderNav(){const nav=document.getElementById("nav-buttons");if(state.step>=6){nav.innerHTML="";return;}
+nav.innerHTML=`<button class="btn btn-secondary" ${state.step===0?"disabled":""} onclick="goStep(${state.step-1})">Back</button><button class="btn btn-primary" ${canProceed()?"":"disabled"} onclick="goStep(${state.step+1})">${state.step===5?"Generate report":"Continue"}</button>`;}
+
+function goStep(n){if(state.step<6)sync();state.step=n;render();}
+
+function render(){renderSteps();renderNav();const el=document.getElementById("step-content");el.innerHTML="";
+switch(state.step){
+case 0:el.innerHTML=`<h2>System info</h2><p class="desc">Identify the AI system under test and the organization conducting the assessment.</p>
+<div class="field"><label>Organization name</label><input type="text" id="f-agency" value="${esc(state.agencyName)}" placeholder="e.g., Department of Health and Human Services"></div>
+<div class="field"><label>AI system name *</label><input type="text" id="f-sysname" value="${esc(state.sysName)}" placeholder="e.g., Benefits Eligibility Review Tool"></div>
+<div class="field"><label>System ID or register ID</label><input type="text" id="f-regid" value="${esc(state.regId)}" placeholder="e.g., AI-2026-003"></div>
+<div class="field"><label>AI system owner *</label><input type="text" id="f-owner" value="${esc(state.owner)}" placeholder="Name and title"></div>
+<div class="grid-2"><div class="field"><label>Test date</label><input type="date" id="f-date" value="${state.testDate}"></div><div class="field"><label>Test type</label><select id="f-type"><option ${state.testType==="Pre-Deployment"?"selected":""}>Pre-Deployment</option><option ${state.testType==="Recurring"?"selected":""}>Recurring</option><option ${state.testType==="Incident-Triggered"?"selected":""}>Incident-Triggered</option></select></div></div>`;
+document.querySelectorAll("#step-content input, #step-content select").forEach(e=>e.addEventListener("input",()=>{sync();renderNav();}));break;
+
+case 1:{const{n1,n2}=nums();el.innerHTML=`<h2>Group data</h2><p class="desc">Enter the two groups you are comparing and the outcome counts. Groups should be defined by protected class (e.g., race, ethnicity, sex, age, disability status) per applicable civil rights requirements.</p>
+<div class="grid-2"><div class="field"><label>Group A name</label><input type="text" id="f-ga" value="${esc(state.groupAName)}" placeholder="e.g., Hispanic"></div><div class="field"><label>Group B name</label><input type="text" id="f-gb" value="${esc(state.groupBName)}" placeholder="e.g., Non-Hispanic"></div></div>
+<div class="tbl-wrap"><table><thead><tr><th></th><th>Positive outcome<br><span style="font-weight:400;color:#6b7280;font-size:.75rem">(approved, selected, etc.)</span></th><th>Negative outcome<br><span style="font-weight:400;color:#6b7280;font-size:.75rem">(denied, not selected, etc.)</span></th><th>Total</th></tr></thead><tbody>
+<tr><td>${esc(state.groupAName)}</td><td><input type="number" min="0" id="f-ap" class="input-center" value="${state.groupAPos}" placeholder="0"></td><td><input type="number" min="0" id="f-an" class="input-center" value="${state.groupANeg}" placeholder="0"></td><td style="text-align:center;font-weight:500">${n1}</td></tr>
+<tr><td>${esc(state.groupBName)}</td><td><input type="number" min="0" id="f-bp" class="input-center" value="${state.groupBPos}" placeholder="0"></td><td><input type="number" min="0" id="f-bn" class="input-center" value="${state.groupBNeg}" placeholder="0"></td><td style="text-align:center;font-weight:500">${n2}</td></tr>
+</tbody></table></div>
+${(n1>0&&n2>0)?`<p class="hint">Total observations: ${n1+n2}. ${(n1<30||n2<30)?"Note: One or both groups have fewer than 30 observations. Fisher's Exact Test will be the primary test.":""}</p>`:""}`;
+document.querySelectorAll("#step-content input").forEach(e=>e.addEventListener("input",()=>{sync();render();}));break;}
+
+case 2:{const di=calcDI();const q=classifyDI(di);const s=SEV[q];const{rateA,rateB}=rates();const lo=Math.min(rateA,rateB),hi=Math.max(rateA,rateB);const loG=rateA<rateB?state.groupAName:state.groupBName;const hiG=rateA<rateB?state.groupBName:state.groupAName;
+el.innerHTML=`<h2>Metrics</h2><p class="desc">Calculated from your contingency table. The Disparate Impact Ratio uses the four-fifths rule from the Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4).</p>
+<div class="metric-row"><div class="metric-box"><div class="metric-label">Selection rates</div><div style="display:flex;justify-content:space-between;font-size:.875rem;margin-top:.5rem"><span>${esc(state.groupAName)}:</span><span style="font-family:monospace;font-weight:500">${(rateA*100).toFixed(1)}%</span></div><div style="display:flex;justify-content:space-between;font-size:.875rem;margin-top:.25rem"><span>${esc(state.groupBName)}:</span><span style="font-family:monospace;font-weight:500">${(rateB*100).toFixed(1)}%</span></div></div>
+<div class="metric-box sev" style="border-color:${s.border};background:${s.bg}"><div class="metric-label" style="color:${s.text}">Disparate impact ratio</div><div class="metric-val" style="color:${s.text}">${di.toFixed(3)}</div><div class="metric-sub" style="color:${s.text}">Quantitative: ${q}</div></div></div>
+<div class="info"><div class="info-title">Interpretation</div><p>${esc(loG)} has a selection rate of ${(lo*100).toFixed(1)}%, compared to ${esc(hiG)} at ${(hi*100).toFixed(1)}%. The ratio is ${di.toFixed(3)}, which is ${di>=.8?"at or above":"below"} the 0.80 threshold.</p>${di<.8?`<p style="font-weight:500;color:${s.text};margin-top:.5rem">This falls in the ${q} zone. Statistical significance testing on the next step will confirm whether this disparity is likely real or could be due to chance.</p>`:""}</div>
+<div style="border:1px solid #e5e7eb;border-radius:.75rem;padding:1rem"><div class="metric-label" style="margin-bottom:.5rem">Threshold reference</div><table class="thresh-table"><thead><tr><th style="text-align:left">Metric</th><th>Pass (&ge;0.90)</th><th>Low (0.80-0.89)</th><th>Moderate (0.65-0.79)</th><th>Critical (&lt;0.65)</th></tr></thead><tbody><tr><td>DI Ratio</td>${["None","Low","Moderate","Critical"].map(c=>`<td><span class="dot ${q===c?"active":"dim"}" style="background:${SEV[c].border};color:${SEV[c].border}"></span></td>`).join("")}</tr></tbody></table></div>`;break;}
+
+case 3:{const{a,b,c,d,n1,n2}=nums();const{rateA,rateB}=rates();const fp=n1>0&&n2>0?fisherExact(a,b,c,d):1;const cr=n1>0&&n2>0?chi2(a,b,c,d):{valid:false,stat:0,p:1};const zr=n1>0&&n2>0?zTest(rateA,n1,rateB,n2):{valid:false,z:0,p:1};const bp=bestP();
+const tests=[{name:"Fisher's Exact Test",note:"Valid for all sample sizes. Recommended default.",p:fp,valid:true,stat:null,sl:null},{name:"Chi-Square Test",note:cr.valid?"All expected cell counts are 5+. Valid.":"One or more expected cell counts below 5. Not valid for this data. Use Fisher's instead.",p:cr.p,valid:cr.valid,stat:cr.stat,sl:"\u03C7\u00B2"},{name:"Two-Proportion Z-Test",note:zr.valid?"Both groups have 30+ observations. Valid.":"One or both groups have fewer than 30 observations. Not valid for this data.",p:zr.p,valid:zr.valid,stat:zr.z,sl:"Z"}];
+el.innerHTML=`<h2>Statistics</h2><p class="desc">All three standard statistical significance tests are run automatically. Each test determines whether the observed disparity could have occurred by chance.</p>
+${tests.map(t=>`<div class="test-card${t.valid?"":" disabled"}"><div class="test-header"><div class="test-name">${t.name}</div>${t.valid?`<span class="badge ${pBadge(t.p)}">p = ${fmtP(t.p)} ${pLabel(t.p)}</span>`:`<span class="badge badge-gray">Not applicable</span>`}</div><div class="test-note">${t.note}</div>${t.valid&&t.stat!==null?`<div class="test-stat">${t.sl} = ${t.stat.toFixed(4)}</div>`:""}</div>`).join("")}
+<div class="info"><div class="info-title">Best available p-value: ${fmtP(bp)}</div><p>${bp<=.01?"Highly significant. The disparity is very unlikely due to chance. Consider escalating by one severity level.":bp<=.05?"Significant. The disparity is unlikely due to chance. The quantitative finding stands as classified.":bp<=.10?"Marginal. The result is borderline. The finding may be reduced by one level. Schedule a follow-up test with a larger sample.":"Not significant. The observed disparity could reasonably be due to chance. The finding is reduced by one severity level."}</p></div>`;break;}
+
+case 4:{const ctxDefs={decisionType:{label:"Decision type",opts:["Informational (Standard)","Influences human decision (Elevated, +1)","Directly determines outcomes (High, +2)"],scores:[0,1,2]},affectedPop:{label:"Affected population",opts:["Internal staff only (Standard)","General public (Elevated, +1)","Vulnerable populations (High, +2)"],scores:[0,1,2]},scale:{label:"Scale of impact",opts:["< 100 decisions/year (Standard)","100 - 10,000 decisions/year (Elevated, +1)","> 10,000 decisions/year (High, +2)"],scores:[0,1,2]},reversibility:{label:"Reversibility",opts:["Easily reversed (Standard)","Reversible with effort (Elevated, +1)","Difficult to reverse (High, +2)"],scores:[0,1,2]}};
+const cm=ctxMax();
+el.innerHTML=`<h2>Context</h2><p class="desc">Assess the real-world context of the AI system. The highest-scoring factor determines the severity adjustment applied to the quantitative finding.</p>
+${Object.entries(ctxDefs).map(([k,c])=>`<div class="ctx-group"><label>${c.label}</label><div class="ctx-opts">${c.opts.map((o,i)=>`<button class="ctx-btn${state.context[k]===c.scores[i]?" selected":""}" onclick="setCtx('${k}',${c.scores[i]})">${o}</button>`).join("")}</div></div>`).join("")}
+<div class="info"><span style="font-weight:500">Highest context factor: </span>${cm===0?"Standard (no adjustment)":cm===1?"Elevated (+1 severity level)":"High (+2 severity levels)"}</div>`;break;}
+
+case 5:{const fc=finalClass();const s=SEV[fc];const di=calcDI();const q=classifyDI(di);const bp=bestP();const cm=ctxMax();
+el.innerHTML=`<h2>Classification</h2><p class="desc">The final classification combines the quantitative disparity, statistical significance, and context assessment.</p>
+<div class="class-box" style="border-color:${s.border};background:${s.bg}"><div class="class-label" style="color:${s.text}">Final classification</div><div class="class-val" style="color:${s.text}">${fc}</div></div>
+<div class="breakdown"><div class="breakdown-title">How this was determined:</div><div class="bk-row"><span>Quantitative (DI Ratio: ${di.toFixed(3)})</span><span>${q}</span></div><div class="bk-row"><span>Context adjustment</span><span>${cm===0?"None":cm===1?"+1 level":"+2 levels"}</span></div><div class="bk-row"><span>Statistical significance (p = ${fmtP(bp)})</span><span>${bp>.10?"-1 level":bp<=.01?"+1 level":"No change"}</span></div><div class="bk-row bk-divider"><span style="font-weight:500">Final</span><span style="font-weight:500;color:${s.text}">${fc}</span></div></div>
+<div class="info"><div class="info-title">Recommended response:</div>${fc==="Critical"?"<p>Immediate suspension of AI system pending remediation. Governance body review required before reactivation. Leadership notification.</p>":fc==="Moderate"?"<p>Remediation plan due within 30 days. Add human review checkpoint for affected decisions. Notify governance body. System may continue with enhanced monitoring.</p>":fc==="Low"?"<p>Document finding and root cause analysis. Monitor at next scheduled test. No system interruption required. If Low persists across two consecutive test cycles, escalate to Moderate.</p>":"<p>Document results. Continue standard monitoring schedule.</p>"}</div>`;break;}
+
+case 6:{const fc=finalClass();const s=SEV[fc];const di=calcDI();const q=classifyDI(di);const{a,b,c,d,n1,n2}=nums();const{rateA,rateB}=rates();const fp=n1>0&&n2>0?fisherExact(a,b,c,d):1;const cr=n1>0&&n2>0?chi2(a,b,c,d):{valid:false};const zr=n1>0&&n2>0?zTest(rateA,n1,rateB,n2):{valid:false};const cm=ctxMax();const bp=bestP();
+el.innerHTML=`<h2>Report</h2><p class="desc">Review the summary below. Print or save this report with your AI system's governance records.</p>
+<div class="report" id="report-content">
+<div class="report-header"><div class="report-title">AI Bias Testing Report</div>${state.agencyName?`<div class="report-org">${esc(state.agencyName)}</div>`:""}<div class="report-date">Generated ${new Date().toLocaleDateString()}</div></div>
+<div class="report-grid">${state.agencyName?`<span>Organization:</span><span class="val">${esc(state.agencyName)}</span>`:""}<span>AI System:</span><span class="val">${esc(state.sysName)}</span><span>System ID:</span><span class="val">${state.regId||"N/A"}</span><span>Owner:</span><span class="val">${esc(state.owner)}</span><span>Test Date:</span><span class="val">${state.testDate}</span><span>Test Type:</span><span class="val">${state.testType}</span></div>
+<div class="report-section"><div class="report-section-title">Contingency table</div><table style="border:1px solid #e5e7eb;border-radius:.25rem"><thead><tr style="background:#f9fafb"><th style="text-align:left"></th><th>Positive</th><th>Negative</th><th>Total</th><th>Rate</th></tr></thead><tbody><tr style="border-top:1px solid #e5e7eb"><td style="font-weight:500">${esc(state.groupAName)}</td><td style="text-align:center;font-family:monospace">${a}</td><td style="text-align:center;font-family:monospace">${b}</td><td style="text-align:center;font-family:monospace">${n1}</td><td style="text-align:center;font-family:monospace">${(rateA*100).toFixed(1)}%</td></tr><tr style="border-top:1px solid #e5e7eb"><td style="font-weight:500">${esc(state.groupBName)}</td><td style="text-align:center;font-family:monospace">${c}</td><td style="text-align:center;font-family:monospace">${d}</td><td style="text-align:center;font-family:monospace">${n2}</td><td style="text-align:center;font-family:monospace">${(rateB*100).toFixed(1)}%</td></tr></tbody></table></div>
+<div class="report-section"><div class="report-metrics"><div><span>DI Ratio</span><span class="big">${di.toFixed(3)}</span></div><div><span>Quantitative</span><span style="font-weight:500">${q}</span></div><div><span>Context Adj.</span><span style="font-weight:500">${cm===0?"None":cm===1?"+1":"+2"}</span></div></div></div>
+<div class="report-section"><div class="report-section-title">Statistical tests</div><div class="stats-grid"><div class="stat-box"><div class="stat-name">Fisher's Exact</div><div class="stat-val">p = ${fmtP(fp)}</div></div><div class="stat-box"><div class="stat-name">Chi-Square</div><div class="stat-val">${cr.valid?`\u03C7\u00B2 = ${cr.stat.toFixed(3)}, p = ${fmtP(cr.p)}`:"N/A"}</div></div><div class="stat-box"><div class="stat-name">Z-Test</div><div class="stat-val">${zr.valid?`Z = ${zr.z.toFixed(3)}, p = ${fmtP(zr.p)}`:"N/A"}</div></div></div></div>
+<div class="report-section"><div class="report-final"><span class="report-final-label">Final Classification:</span><span class="report-final-badge" style="background:${s.bg};color:${s.text};border-color:${s.border}">${fc}</span></div></div>
+<div class="report-section report-methodology"><div>Methodology: Disparate Impact Ratio per Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4). Statistical significance via Fisher's Exact Test, Chi-Square Test of Independence, and/or Two-Proportion Z-Test. Context assessment per NIST AI Risk Management Framework 1.0 (AI 100-1) Measure function.</div><div style="margin-top:4px">References: NIST AI RMF 1.0, NIST SP 1270, EEOC Technical Assistance on AI and Title VII (May 2023).</div></div>
+</div>
+<div class="btn-group"><button class="btn btn-dark" onclick="printReport()">Print report</button><button class="btn btn-secondary" onclick="goStep(0)">Start new test</button></div>`;break;}
+}}
+
+function setCtx(k,v){state.context[k]=v;render();}
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+
+function printReport(){
+const content=document.getElementById("report-content").innerHTML;
+const w=window.open("","_blank");
+w.document.write(`<!DOCTYPE html><html><head><title>Bias Test Report - ${esc(state.sysName)}</title><style>body{font-family:'DM Sans',system-ui,sans-serif;max-width:700px;margin:2rem auto;color:#1a1a1a;font-size:13px;line-height:1.6}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:6px 10px;text-align:left}.report-header{text-align:center;border-bottom:1px solid #e5e7eb;padding-bottom:1rem;margin-bottom:1rem}.report-title{font-size:1.125rem;font-weight:700}.report-org{font-size:.875rem;color:#4b5563}.report-date{font-size:.75rem;color:#9ca3af}.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:1rem}.report-grid .val{font-weight:500}.report-section{border-top:1px solid #e5e7eb;padding-top:.75rem;margin-top:.75rem}.report-section-title{font-size:.75rem;font-weight:500;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}.stat-box{background:#f9fafb;border-radius:.375rem;padding:.5rem;font-size:.75rem}.stat-name{font-weight:500}.stat-val{font-family:monospace}.report-final{display:flex;align-items:center;gap:.75rem}.report-final-label{font-size:.75rem;color:#6b7280}.report-final-badge{padding:.5rem 1rem;border-radius:.5rem;font-weight:700;font-size:1.125rem;border-width:2px;border-style:solid}.report-methodology{font-size:.75rem;color:#6b7280;line-height:1.5}.report-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}.report-metrics div span:first-child{display:block;font-size:.75rem;color:#6b7280}.big{font-family:monospace;font-weight:700;font-size:1.125rem}</style></head><body>${content}</body></html>`);
+w.document.close();w.print();}
+
+render();
+</script>
+</body>
+</html>
