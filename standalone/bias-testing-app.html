@@ -63,6 +63,10 @@ h2{font-size:1.125rem;font-weight:700;color:#111827;margin-bottom:1rem}
 label{display:block;font-size:.875rem;font-weight:500;color:#374151;margin-bottom:.25rem}
 input[type="text"],input[type="number"],input[type="date"],select{width:100%;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:.875rem;font-family:inherit;color:#111827;background:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,.3)}
+/* Hide number input spinner arrows */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type="number"]{-moz-appearance:textfield;appearance:textfield}
 .input-center{text-align:center}
 .field{margin-bottom:1rem}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -237,11 +241,11 @@ document.querySelectorAll("#step-content input, #step-content select").forEach(e
 case 1:{const{n1,n2}=nums();el.innerHTML=`<h2>Group data</h2><p class="desc">Enter the two groups you are comparing and the outcome counts. Groups should be defined by protected class (e.g., race, ethnicity, sex, age, disability status) per applicable civil rights requirements.</p>
 <div class="grid-2"><div class="field"><label>Group A name</label><input type="text" id="f-ga" value="${esc(state.groupAName)}" placeholder="e.g., Hispanic"></div><div class="field"><label>Group B name</label><input type="text" id="f-gb" value="${esc(state.groupBName)}" placeholder="e.g., Non-Hispanic"></div></div>
 <div class="tbl-wrap"><table><thead><tr><th></th><th>Positive outcome<br><span style="font-weight:400;color:#6b7280;font-size:.75rem">(approved, selected, etc.)</span></th><th>Negative outcome<br><span style="font-weight:400;color:#6b7280;font-size:.75rem">(denied, not selected, etc.)</span></th><th>Total</th></tr></thead><tbody>
-<tr><td>${esc(state.groupAName)}</td><td><input type="number" min="0" id="f-ap" class="input-center" value="${state.groupAPos}" placeholder="0"></td><td><input type="number" min="0" id="f-an" class="input-center" value="${state.groupANeg}" placeholder="0"></td><td style="text-align:center;font-weight:500">${n1}</td></tr>
-<tr><td>${esc(state.groupBName)}</td><td><input type="number" min="0" id="f-bp" class="input-center" value="${state.groupBPos}" placeholder="0"></td><td><input type="number" min="0" id="f-bn" class="input-center" value="${state.groupBNeg}" placeholder="0"></td><td style="text-align:center;font-weight:500">${n2}</td></tr>
+<tr><td>${esc(state.groupAName)}</td><td><input type="number" min="0" id="f-ap" class="input-center" value="${state.groupAPos}" placeholder="0"></td><td><input type="number" min="0" id="f-an" class="input-center" value="${state.groupANeg}" placeholder="0"></td><td style="text-align:center;font-weight:500" id="total-a">${n1}</td></tr>
+<tr><td>${esc(state.groupBName)}</td><td><input type="number" min="0" id="f-bp" class="input-center" value="${state.groupBPos}" placeholder="0"></td><td><input type="number" min="0" id="f-bn" class="input-center" value="${state.groupBNeg}" placeholder="0"></td><td style="text-align:center;font-weight:500" id="total-b">${n2}</td></tr>
 </tbody></table></div>
-${(n1>0&&n2>0)?`<p class="hint">Total observations: ${n1+n2}. ${(n1<30||n2<30)?"Note: One or both groups have fewer than 30 observations. Fisher's Exact Test will be the primary test.":""}</p>`:""}`;
-document.querySelectorAll("#step-content input").forEach(e=>e.addEventListener("input",()=>{sync();render();}));break;}
+<div id="step1-hint">${(n1>0&&n2>0)?`<p class="hint">Total observations: ${n1+n2}. ${(n1<30||n2<30)?"Note: One or both groups have fewer than 30 observations. Fisher's Exact Test will be the primary test.":""}</p>`:""}</div>`;
+document.querySelectorAll("#step-content input").forEach(e=>e.addEventListener("input",()=>{sync();const{n1,n2}=nums();const ta=document.getElementById("total-a");const tb=document.getElementById("total-b");if(ta)ta.textContent=n1;if(tb)tb.textContent=n2;const hint=document.getElementById("step1-hint");if(hint)hint.innerHTML=(n1>0&&n2>0)?`<p class="hint">Total observations: ${n1+n2}. ${(n1<30||n2<30)?"Note: One or both groups have fewer than 30 observations. Fisher's Exact Test will be the primary test.":""}</p>`:"";renderNav();}));break;}
 
 case 2:{const di=calcDI();const q=classifyDI(di);const s=SEV[q];const{rateA,rateB}=rates();const lo=Math.min(rateA,rateB),hi=Math.max(rateA,rateB);const loG=rateA<rateB?state.groupAName:state.groupBName;const hiG=rateA<rateB?state.groupBName:state.groupAName;
 el.innerHTML=`<h2>Metrics</h2><p class="desc">Calculated from your contingency table. The Disparate Impact Ratio uses the four-fifths rule from the Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4).</p>
