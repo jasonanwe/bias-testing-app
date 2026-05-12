@@ -198,8 +198,21 @@ const SEV={None:{bg:"#e8f5e9",text:"#1b5e20",border:"#4caf50"},Low:{bg:"#fff8e1"
 
 let state={step:0,agencyName:"",sysName:"",regId:"",owner:"",testDate:new Date().toISOString().slice(0,10),testType:"Pre-Deployment",groupAName:"Group A",groupBName:"Group B",groupAPos:"",groupANeg:"",groupBPos:"",groupBNeg:"",context:{decisionType:0,affectedPop:0,scale:0,reversibility:0}};
 
-function val(id){const el=document.getElementById(id);return el?el.value:"";}
-function sync(){state.agencyName=val("f-agency");state.sysName=val("f-sysname");state.regId=val("f-regid");state.owner=val("f-owner");state.testDate=val("f-date");state.testType=val("f-type");state.groupAName=val("f-ga")||"Group A";state.groupBName=val("f-gb")||"Group B";state.groupAPos=val("f-ap");state.groupANeg=val("f-an");state.groupBPos=val("f-bp");state.groupBNeg=val("f-bn");}
+function val(id){const el=document.getElementById(id);return el?el.value:null;}
+function sync(){
+  const ag=val("f-agency");if(ag!==null)state.agencyName=ag;
+  const sn=val("f-sysname");if(sn!==null)state.sysName=sn;
+  const ri=val("f-regid");if(ri!==null)state.regId=ri;
+  const ow=val("f-owner");if(ow!==null)state.owner=ow;
+  const td=val("f-date");if(td!==null)state.testDate=td;
+  const tt=val("f-type");if(tt!==null)state.testType=tt;
+  const ga=val("f-ga");if(ga!==null)state.groupAName=ga||"Group A";
+  const gb=val("f-gb");if(gb!==null)state.groupBName=gb||"Group B";
+  const ap=val("f-ap");if(ap!==null)state.groupAPos=ap;
+  const an=val("f-an");if(an!==null)state.groupANeg=an;
+  const bp=val("f-bp");if(bp!==null)state.groupBPos=bp;
+  const bn=val("f-bn");if(bn!==null)state.groupBNeg=bn;
+}
 
 function nums(){const a=parseInt(state.groupAPos)||0,b=parseInt(state.groupANeg)||0,c=parseInt(state.groupBPos)||0,d=parseInt(state.groupBNeg)||0;return{a,b,c,d,n1:a+b,n2:c+d};}
 function rates(){const{a,b,c,d,n1,n2}=nums();return{rateA:n1>0?a/n1:0,rateB:n2>0?c/n2:0,n1,n2,a,b,c,d};}
