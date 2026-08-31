@@ -185,6 +185,34 @@ td:first-child{font-weight:500;color:#374151}
 /* Print */
 @media print{*,*::before,*::after{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}body{background:#fff}.container{max-width:100%}.steps,.btn-row,.btn-group,.footer,.ahead,.preview-banner{display:none!important}.card{box-shadow:none;border:1px solid #ccc}}
 @media(max-width:640px){.grid-2{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr}.ctx-opts{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}.report-grid{grid-template-columns:1fr}.report-metrics{grid-template-columns:1fr}}
+
+/* --- multi-comparison additions --- */
+.cmp-card{border:1px solid #e5e7eb;border-radius:.85rem;padding:1rem;margin-bottom:1rem;background:#fcfcfd}
+.cmp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.cmp-n{font-size:.8rem;font-weight:600;color:#1d4ed8}
+.cmp-remove{background:none;border:none;color:#9ca3af;font-size:.75rem;cursor:pointer;font-family:inherit;padding:2px 6px;border-radius:4px}
+.cmp-remove:hover{color:#b91c1c;background:#fef2f2}
+.data-table{width:100%;border-collapse:collapse;font-size:.8125rem;margin-top:.4rem}
+.data-table th{background:#f3f4f6;padding:.5rem;font-weight:500;color:#374151;text-align:center;font-size:.75rem}
+.data-table th:first-child{text-align:left}
+.data-table td{padding:.4rem;border-top:1px solid #f3f4f6;text-align:center}
+.data-table td.rowlab{text-align:left;font-weight:500;color:#374151}
+.data-table input{width:100%;padding:.4rem;border:1px solid #d1d5db;border-radius:.4rem;text-align:center;font-family:inherit;font-size:.8125rem}
+.th-sub{font-weight:400;color:#6b7280;font-size:.7rem}
+.cmp-table{width:100%;border-collapse:collapse;font-size:.8125rem;margin:.5rem 0 1rem}
+.cmp-table th{background:#f3f4f6;padding:.5rem .6rem;text-align:left;font-weight:500;color:#374151;font-size:.75rem;border-bottom:1px solid #e5e7eb}
+.cmp-table td{padding:.5rem .6rem;border-bottom:1px solid #f3f4f6;vertical-align:top}
+.cmp-table tr.dim td{color:#9ca3af;font-style:italic}
+.cmp-badge{display:inline-block;padding:2px 9px;border-radius:9999px;font-size:.7rem;font-weight:600;border:1px solid}
+.mono{font-family:'DM Sans',monospace}
+.class-sub{font-size:.75rem;margin-top:.35rem;opacity:.85}
+.stats-inline{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0}
+.stat-chip{background:#f3f4f6;border-radius:.4rem;padding:2px 8px;font-size:.7rem;color:#374151;font-family:monospace}
+.stat-chip.dim{opacity:.5}
+.ctx-btn{padding:.7rem;border-radius:.5rem;font-size:.72rem;text-align:left;border:1px solid #e5e7eb;background:#fff;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s}
+.ctx-btn:hover{border-color:#9ca3af}
+.ctx-btn.sel{border-color:#2563eb;background:#eff6ff;color:#1e40af;box-shadow:0 0 0 1px #93c5fd}
+@media(max-width:640px){.cmp-table{font-size:.75rem}.cmp-table th,.cmp-table td{padding:.35rem}}
 </style>
 </head>
 <body>
@@ -204,55 +232,114 @@ td:first-child{font-weight:500;color:#374151}
 </div>
 
 <script>
-const STEPS=["System Info","Group Data","Metrics","Statistics","Context","Classification","Report"];
+const STEPS=["System Info","Comparisons","Metrics","Statistics","Context","Classification","Report"];
 const STEP_INFO=[
  ["System Info","The system name, owner, register ID, test date, and whether this is pre-deployment, recurring, or incident-triggered."],
- ["Group Data","The two groups you are comparing, defined by protected class, and the favourable and unfavourable outcome counts for each. Gather these before you start."],
- ["Metrics","Calculated for you. Selection rates per group and the disparate impact ratio against the four-fifths rule."],
- ["Statistics","Calculated for you. Fisher's Exact, chi-square, and two-proportion z-test are all run, and the strongest applicable result is used."],
- ["Context","Four questions about the decision: its type, who it affects, how many decisions per year, and how reversible it is."],
- ["Classification","The final bias classification, combining the metrics, the statistics, and the context answers."],
- ["Report","A printable record for your AI inventory and governance review."]];
+ ["Comparisons","Each pair of groups you are comparing, defined by protected class, with the favourable and unfavourable outcome counts for each. Add as many comparisons as the use case needs. Gather these before you start."],
+ ["Metrics","Calculated for you. Selection rates and the disparate impact ratio for every comparison, against the four-fifths rule."],
+ ["Statistics","Calculated for you. Fisher's Exact, chi-square, and two-proportion z-test run on each comparison, plus a multiplicity-adjusted p-value shown for context."],
+ ["Context","Four questions about the decision: its type, who it affects, how many decisions per year, and how reversible it is. Answered once for the system."],
+ ["Classification","A classification for each comparison and an overall result for the system, plus a plain-language summary."],
+ ["Report","A single printable record covering every comparison, for your AI inventory and governance review."]];
 let aheadOpen=false;
-const NEUTRAL={bg:"#f9fafb",text:"#6b7280",border:"#d1d5db"};
+
 const SEV={None:{bg:"#e8f5e9",text:"#1b5e20",border:"#4caf50"},Low:{bg:"#fff8e1",text:"#e65100",border:"#ffa000"},Moderate:{bg:"#fff3e0",text:"#bf360c",border:"#e65100"},Critical:{bg:"#ffebee",text:"#b71c1c",border:"#c62828"}};
+const NEUTRAL={bg:"#f9fafb",text:"#6b7280",border:"#d1d5db"};
+const LEVELS=["None","Low","Moderate","Critical"];
 
-let state={step:0,agencyName:"",sysName:"",regId:"",owner:"",testDate:new Date().toISOString().slice(0,10),testType:"Pre-Deployment",groupAName:"Group A",groupBName:"Group B",groupAPos:"",groupANeg:"",groupBPos:"",groupBNeg:"",context:{decisionType:0,affectedPop:0,scale:0,reversibility:0}};
+function newComparison(){return{label:"",aName:"Group A",bName:"Group B",aPos:"",aNeg:"",bPos:"",bNeg:""};}
 
-function val(id){const el=document.getElementById(id);return el?el.value:null;}
-function sync(){
-  const ag=val("f-agency");if(ag!==null)state.agencyName=ag;
-  const sn=val("f-sysname");if(sn!==null)state.sysName=sn;
-  const ri=val("f-regid");if(ri!==null)state.regId=ri;
-  const ow=val("f-owner");if(ow!==null)state.owner=ow;
-  const td=val("f-date");if(td!==null)state.testDate=td;
-  const tt=val("f-type");if(tt!==null)state.testType=tt;
-  const ga=val("f-ga");if(ga!==null)state.groupAName=ga||"Group A";
-  const gb=val("f-gb");if(gb!==null)state.groupBName=gb||"Group B";
-  const ap=val("f-ap");if(ap!==null)state.groupAPos=ap;
-  const an=val("f-an");if(an!==null)state.groupANeg=an;
-  const bp=val("f-bp");if(bp!==null)state.groupBPos=bp;
-  const bn=val("f-bn");if(bn!==null)state.groupBNeg=bn;
-}
+let state={step:0,agencyName:"",sysName:"",regId:"",owner:"",
+ testDate:new Date().toISOString().slice(0,10),testType:"Pre-Deployment",
+ comparisons:[newComparison()],
+ context:{decisionType:0,affectedPop:0,scale:0,reversibility:0}};
 
-function nums(){const a=parseInt(state.groupAPos)||0,b=parseInt(state.groupANeg)||0,c=parseInt(state.groupBPos)||0,d=parseInt(state.groupBNeg)||0;return{a,b,c,d,n1:a+b,n2:c+d};}
-function rates(){const{a,b,c,d,n1,n2}=nums();return{rateA:n1>0?a/n1:0,rateB:n2>0?c/n2:0,n1,n2,a,b,c,d};}
-function calcDI(){const{rateA,rateB}=rates();if(rateA===0&&rateB===0)return 0;return rateB>0?(rateA<rateB?rateA/rateB:rateB/rateA):0;}
+/* ---------- statistics ---------- */
+function logFactorial(n){let r=0;for(let i=2;i<=n;i++)r+=Math.log(i);return r;}
+function fisherExact(a,b,c,d){const n=a+b+c+d;const logDenom=logFactorial(a+b)+logFactorial(c+d)+logFactorial(a+c)+logFactorial(b+d)-logFactorial(n);const pCut=logDenom-(logFactorial(a)+logFactorial(b)+logFactorial(c)+logFactorial(d));let p=0;const maxI=Math.min(a+b,a+c);for(let i=0;i<=maxI;i++){const j=a+b-i,k=a+c-i,l=c+d-k;if(j<0||k<0||l<0)continue;const lp=logDenom-(logFactorial(i)+logFactorial(j)+logFactorial(k)+logFactorial(l));if(lp<=pCut+1e-10)p+=Math.exp(lp);}return Math.min(p,1);}
+function chi2(a,b,c,d){const n=a+b+c+d;if(n===0)return{valid:false,stat:0,p:1};const e1=(a+b)*(a+c)/n,e2=(a+b)*(b+d)/n,e3=(c+d)*(a+c)/n,e4=(c+d)*(b+d)/n;if(e1<5||e2<5||e3<5||e4<5)return{valid:false,stat:0,p:1};const s=Math.pow(a-e1,2)/e1+Math.pow(b-e2,2)/e2+Math.pow(c-e3,2)/e3+Math.pow(d-e4,2)/e4;return{valid:true,stat:s,p:1-chi2CDF(s)};}
+function chi2CDF(x){if(x<=0)return 0;return erf(Math.sqrt(x/2));}
+function erf(x){const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;const sign=x<0?-1:1;x=Math.abs(x);const t=1/(1+p*x);const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);return sign*y;}
+function zTest(p1,n1,p2,n2){if(n1<30||n2<30)return{valid:false,z:0,p:1};const ph=(p1*n1+p2*n2)/(n1+n2);const se=Math.sqrt(ph*(1-ph)*(1/n1+1/n2));if(se===0)return{valid:false,z:0,p:1};const z=(p1-p2)/se;return{valid:true,z:z,p:2*(1-normalCDF(Math.abs(z)))};}
+function normalCDF(x){return .5*(1+erf(x/Math.sqrt(2)));}
 function classifyDI(r){if(r>=.9)return"None";if(r>=.8)return"Low";if(r>=.65)return"Moderate";return"Critical";}
-
-function logFact(n){let r=0;for(let i=2;i<=n;i++)r+=Math.log(i);return r;}
-function fisherExact(a,b,c,d){const n=a+b+c+d;const ld=logFact(a+b)+logFact(c+d)+logFact(a+c)+logFact(b+d)-logFact(n);const pc=ld-(logFact(a)+logFact(b)+logFact(c)+logFact(d));let p=0;const mx=Math.min(a+b,a+c);for(let i=0;i<=mx;i++){const j=(a+b)-i,k=(a+c)-i,l=(c+d)-k;if(j<0||k<0||l<0)continue;const lp=ld-(logFact(i)+logFact(j)+logFact(k)+logFact(l));if(lp<=pc+1e-10)p+=Math.exp(lp);}return Math.min(p,1);}
-function erf(x){const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+p*x);return s*(1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x));}
-function chi2(a,b,c,d){const n=a+b+c+d;const e1=((a+b)*(a+c))/n,e2=((a+b)*(b+d))/n,e3=((c+d)*(a+c))/n,e4=((c+d)*(b+d))/n;if(e1<5||e2<5||e3<5||e4<5)return{valid:false,stat:0,p:1};const s=((a-e1)**2)/e1+((b-e2)**2)/e2+((c-e3)**2)/e3+((d-e4)**2)/e4;return{valid:true,stat:s,p:1-erf(Math.sqrt(s/2))};}
-function zTest(p1,n1,p2,n2){if(n1<30||n2<30)return{valid:false,z:0,p:1};const ph=(p1*n1+p2*n2)/(n1+n2);const se=Math.sqrt(ph*(1-ph)*(1/n1+1/n2));if(se===0)return{valid:true,z:0,p:1};const z=(p1-p2)/se;return{valid:true,z,p:2*(1-.5*(1+erf(Math.abs(z)/Math.sqrt(2))))};}
 function fmtP(p){return p<.001?"< 0.001":p.toFixed(4);}
 function pLabel(p){return p<=.01?"(highly significant)":p<=.05?"(significant)":p<=.10?"(marginal)":"(not significant)";}
 function pBadge(p){return p<=.05?"badge-red":p<=.10?"badge-amber":"badge-green";}
+function pct(x){return (x*100).toFixed(1)+"%";}
+function esc(s){const d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML;}
 
-function bestP(){const{a,b,c,d,n1,n2}=nums();const{rateA,rateB}=rates();if(n1===0||n2===0)return 1;const fp=fisherExact(a,b,c,d);const cr=chi2(a,b,c,d);const zr=zTest(rateA,n1,rateB,n2);return Math.min(fp,cr.valid?cr.p:1,zr.valid?zr.p:1);}
+/* Holm-Bonferroni step-down adjustment. Advisory only: the raw p-value
+   continues to drive the finding. */
+function holmAdjust(ps){
+ const m=ps.length;
+ if(m===0)return[];
+ const order=ps.map((p,i)=>({p:p,i:i})).sort((x,y)=>x.p-y.p);
+ const out=new Array(m);
+ let running=0;
+ order.forEach((o,k)=>{const v=Math.min(1,(m-k)*o.p);running=Math.max(running,v);out[o.i]=running;});
+ return out;
+}
+
+/* ---------- per-comparison computation ---------- */
+function compStats(c){
+ const a=parseInt(c.aPos)||0,b=parseInt(c.aNeg)||0,cc=parseInt(c.bPos)||0,d=parseInt(c.bNeg)||0;
+ const n1=a+b,n2=cc+d;
+ const ready=n1>0&&n2>0;
+ const rateA=n1>0?a/n1:0,rateB=n2>0?cc/n2:0;
+ const di=rateB>0?(rateA<rateB?rateA/rateB:rateB/rateA):0;
+ const fp=ready?fisherExact(a,b,cc,d):1;
+ const cr=ready?chi2(a,b,cc,d):{valid:false,stat:0,p:1};
+ const zr=ready?zTest(rateA,n1,rateB,n2):{valid:false,z:0,p:1};
+ const bestP=Math.min(fp,cr.valid?cr.p:1,zr.valid?zr.p:1);
+ return{a:a,b:b,c:cc,d:d,n1:n1,n2:n2,ready:ready,rateA:rateA,rateB:rateB,di:di,
+  fp:fp,cr:cr,zr:zr,bestP:bestP,q:ready?classifyDI(di):null,
+  lowG:rateA<rateB?c.aName:c.bName,hiG:rateA<rateB?c.bName:c.aName,
+  lowR:Math.min(rateA,rateB),hiR:Math.max(rateA,rateB),
+  small:ready&&(n1<30||n2<30),
+  name:(c.label&&c.label.trim())?c.label.trim():(c.aName+" vs "+c.bName)};
+}
+function allStats(){return state.comparisons.map(compStats);}
+function readyStats(){return allStats().filter(s=>s.ready);}
+function hasData(){return readyStats().length>0;}
 function ctxMax(){return Math.max(state.context.decisionType,state.context.affectedPop,state.context.scale,state.context.reversibility);}
-function finalClass(){const q=classifyDI(calcDI());if(q==="None")return"None";const lvl=["None","Low","Moderate","Critical"];let i=lvl.indexOf(q);i=Math.min(i+ctxMax(),3);const bp=bestP();if(bp>.10)i=Math.max(i-1,0);else if(bp<=.01)i=Math.min(i+1,3);return lvl[i];}
 
+function adjustedPs(){
+ const st=allStats();
+ const idx=[];const ps=[];
+ st.forEach((s,i)=>{if(s.ready){idx.push(i);ps.push(s.bestP);}});
+ const adj=holmAdjust(ps);
+ const out=new Array(st.length).fill(null);
+ idx.forEach((i,k)=>{out[i]=adj[k];});
+ return out;
+}
+
+function finalClassFor(s){
+ if(!s.ready)return null;
+ if(s.q==="None")return"None";
+ let i=LEVELS.indexOf(s.q);
+ i=Math.min(i+ctxMax(),3);
+ if(s.bestP>.10)i=Math.max(i-1,0);
+ else if(s.bestP<=.01)i=Math.min(i+1,3);
+ return LEVELS[i];
+}
+function overallClass(){
+ let best=-1;
+ allStats().forEach(s=>{const f=finalClassFor(s);if(f)best=Math.max(best,LEVELS.indexOf(f));});
+ return best<0?null:LEVELS[best];
+}
+function drivingStat(){
+ let out=null,outIdx=-1,bestIdx=-1,bestDi=2;
+ allStats().forEach((s,i)=>{
+  if(!s.ready)return;
+  const li=LEVELS.indexOf(finalClassFor(s));
+  if(li>bestIdx||(li===bestIdx&&s.di<bestDi)){bestIdx=li;bestDi=s.di;out=s;outIdx=i;}
+ });
+ if(out)out.index=outIdx;
+ return out;
+}
+
+/* ---------- re-review ---------- */
 function reviewRec(fc){
  if(fc==="Critical")return{days:30,interval:"After remediation, before return to service",
   text:"Re-test after remediation and before the system returns to service. Once cleared, test quarterly for at least two consecutive cycles before resuming the standard cadence."};
@@ -261,102 +348,314 @@ function reviewRec(fc){
  if(fc==="Low")return{days:180,interval:"Next scheduled cycle",
   text:"Re-test at the next scheduled cycle. If a Low finding persists across two consecutive cycles, escalate the finding to Moderate."};
  return{days:180,interval:"Standard cadence",
-  text:"Continue your organization\u2019s standard testing schedule. A common baseline is quarterly for high-impact systems and semi-annually for elevated systems."};}
-function nextDue(days){const base=state.testDate?new Date(state.testDate+"T00:00:00"):new Date();base.setDate(base.getDate()+days);return base.toLocaleDateString();}
+  text:"Continue your organization\u2019s standard testing schedule. A common baseline is quarterly for high-impact systems and semi-annually for elevated systems."};
+}
+function nextDue(days){const b=state.testDate?new Date(state.testDate+"T00:00:00"):new Date();b.setDate(b.getDate()+days);return b.toLocaleDateString();}
 
-function canProceed(){if(state.step===0)return state.sysName&&state.owner;if(state.step===1){const{n1,n2}=nums();return n1>0&&n2>0;}return true;}
+/* ---------- narrative ---------- */
+function listJoin(items){
+ if(items.length===0)return"";
+ if(items.length===1)return items[0];
+ if(items.length===2)return items[0]+" and "+items[1];
+ return items.slice(0,-1).join(", ")+", and "+items[items.length-1];
+}
+function buildNarrative(){
+ const st=readyStats();
+ if(st.length===0)return[];
+ const adj=adjustedPs();
+ const paras=[];
+ const system=state.sysName||"the system under test";
+ const m=st.length;
+ const fcAll=overallClass();
 
-function hasData(){const{n1,n2}=nums();return n1>0&&n2>0;}
+ paras.push("This "+state.testType.toLowerCase()+" bias test examined "+system+" across "+
+  (m===1?"one comparison":m+" comparisons")+": "+listJoin(st.map(s=>s.name))+".");
+
+ const drv=drivingStat();
+ const per100=Math.round(drv.di*100);
+ let gap=(m===1?"":"The comparison driving the result is "+drv.name+". ")+
+  drv.lowG+" received favourable outcomes at "+pct(drv.lowR)+" against "+pct(drv.hiR)+" for "+drv.hiG+
+  ". The disparate impact ratio is "+drv.di.toFixed(3)+", which means that for every 100 "+drv.hiG+
+  " receiving a favourable outcome at their group's rate, roughly "+per100+" "+drv.lowG+" did. ";
+ if(drv.di>=.9)gap+="That sits above 0.90 and shows no meaningful separation between the two groups under the four-fifths rule.";
+ else if(drv.di>=.8)gap+="That clears the 0.80 four-fifths threshold, though the margin is narrow enough to watch across future cycles.";
+ else gap+="That falls below the 0.80 threshold set by the four-fifths rule, placing the quantitative finding in the "+drv.q+" range and marking the disparity as one requiring explanation.";
+ paras.push(gap);
+
+ if(m>1){
+  const flagged=st.filter(s=>s.di<.8);
+  const clear=st.filter(s=>s.di>=.8);
+  let other="Across all "+m+" comparisons, "+
+   (flagged.length===0?"none fell below the 0.80 threshold":
+    flagged.length===m?"every one fell below the 0.80 threshold":
+    flagged.length+" fell below the 0.80 threshold ("+listJoin(flagged.map(s=>s.name))+") and "+clear.length+" cleared it")+". ";
+  const smalls=st.filter(s=>s.small);
+  if(smalls.length>0)other+=listJoin(smalls.map(s=>s.name))+(smalls.length===1?" has":" have")+" a group under 30 observations, so "+(smalls.length===1?"that result carries":"those results carry")+" limited statistical power. ";
+  other+="The overall classification takes the most severe result across comparisons, since a disparity affecting one group is not offset by parity in another.";
+  paras.push(other);
+ }
+
+ let sig;
+ if(drv.bestP<=.01)sig="Statistical testing puts the probability of a gap this size arising by chance at "+fmtP(drv.bestP)+". That is a highly significant result, so the disparity should be treated as real rather than as noise, and it raises the finding by one level.";
+ else if(drv.bestP<=.05)sig="Statistical testing puts the probability of a gap this size arising by chance at "+fmtP(drv.bestP)+", significant at the conventional 0.05 threshold. The quantitative finding stands as measured.";
+ else if(drv.bestP<=.10)sig="Statistical testing returns "+fmtP(drv.bestP)+", a marginal result. The gap may be real, but this sample cannot establish it confidently, so the finding is treated cautiously and a follow-up test with more data is warranted.";
+ else sig="Statistical testing returns "+fmtP(drv.bestP)+", which is not significant. A gap this size could reasonably occur by chance at these sample sizes, so the finding is reduced by one level.";
+ if(drv.small)sig+=" One or both groups in this comparison have fewer than 30 observations, so Fisher's Exact Test carried the result and the test has limited power.";
+ paras.push(sig);
+
+ if(m>1){
+  const a=adj[drv.index];
+  const sigRaw=st.filter(s=>s.bestP<=.05).length;
+  let mult="Running "+m+" comparisons raises the chance that at least one crosses the 0.05 threshold by chance alone. "+
+   "A Holm-Bonferroni adjustment is reported alongside each raw p-value for that reason. "+
+   (a!=null?("For the driving comparison the raw p-value of "+fmtP(drv.bestP)+" adjusts to "+fmtP(a)+". "):"")+
+   sigRaw+" of "+m+" comparisons "+(sigRaw===1?"is":"are")+" significant on the raw p-value. "+
+   "The adjustment is advisory and does not change the classification, which continues to follow the raw p-value under your organization\u2019s classification policy. It is shown so the Council can weigh how many tests were run when reading the result.";
+  paras.push(mult);
+ }
+
+ const drivers=[];
+ if(state.context.decisionType===2)drivers.push("it directly determines outcomes rather than informing them");
+ else if(state.context.decisionType===1)drivers.push("it influences a human decision");
+ if(state.context.affectedPop===2)drivers.push("it affects vulnerable populations");
+ else if(state.context.affectedPop===1)drivers.push("it affects the general public");
+ if(state.context.scale===2)drivers.push("it operates above 10,000 decisions a year");
+ else if(state.context.scale===1)drivers.push("it operates at 100 to 10,000 decisions a year");
+ if(state.context.reversibility===2)drivers.push("its outcomes are difficult to reverse");
+ else if(state.context.reversibility===1)drivers.push("its outcomes are reversible only with effort");
+ if(ctxMax()===0)paras.push("The context assessment placed the system in the standard band on every factor, so no severity adjustment was applied.");
+ else paras.push("The context assessment raised the severity by "+(ctxMax()===1?"one level":"two levels")+" because "+listJoin(drivers)+". The same numerical gap carries more weight in a setting like this than it would in a low-stakes one. Context is a property of the system, so the same adjustment applies to every comparison.");
+
+ const rec=reviewRec(fcAll);
+ let concl;
+ if(fcAll==="Critical")concl="Taken together, the overall finding is Critical. A disparity of this size in a setting of this consequence warrants suspending the system pending remediation, with governance review before it returns to service and notification to leadership. "+rec.text;
+ else if(fcAll==="Moderate")concl="Taken together, the overall finding is Moderate. The system can continue operating with enhanced monitoring, but a remediation plan is due within 30 days and a human review checkpoint should be added for affected decisions. "+rec.text;
+ else if(fcAll==="Low")concl="Taken together, the overall finding is Low. No interruption to the system is required, but the finding and its root cause should be documented and carried into the next review. "+rec.text;
+ else concl="Taken together, the overall finding is None. No disparity requiring action was identified in "+(m===1?"this comparison":"any of these comparisons")+". Document the result and continue monitoring. "+rec.text;
+ concl+=" The target date for the next test is "+nextDue(rec.days)+".";
+ paras.push(concl);
+
+ paras.push("This summary is generated from the figures above. It is a screening result rather than a legal conclusion, and the four-fifths rule is a threshold for further inquiry rather than a definitive standard. Involve counsel before acting on a finding.");
+ return paras;
+}
+
+/* ---------- comparison editing ---------- */
+function addComparison(){sync();state.comparisons.push(newComparison());render();}
+function removeComparison(i){sync();if(state.comparisons.length>1)state.comparisons.splice(i,1);render();}
+function setCtx(k,v){state.context[k]=v;render();}
+
+function sync(){
+ const g=id=>{const e=document.getElementById(id);return e?e.value:null;};
+ if(state.step===0){
+  const m={"f-agency":"agencyName","f-sysname":"sysName","f-regid":"regId","f-owner":"owner","f-date":"testDate","f-type":"testType"};
+  Object.keys(m).forEach(k=>{const v=g(k);if(v!==null)state[k==="f-type"?"testType":m[k]]=v;});
+ }
+ if(state.step===1){
+  state.comparisons.forEach((c,i)=>{
+   [["label","label"],["aName","aName"],["bName","bName"],["aPos","aPos"],["aNeg","aNeg"],["bPos","bPos"],["bNeg","bNeg"]].forEach(pair=>{
+    const v=g("c"+i+"-"+pair[0]);
+    if(v!==null)c[pair[1]]=v;
+   });
+  });
+ }
+}
+
+function canProceed(){
+ if(state.step===0)return !!(state.sysName&&state.owner);
+ if(state.step===1)return hasData();
+ return true;
+}
+
+/* ---------- rendering ---------- */
+function renderSteps(){
+ const bar=document.getElementById("steps-bar");let h="";
+ STEPS.forEach((s,i)=>{
+  const cls=i===state.step?"active":i<state.step?"done":"pending";
+  h+=`<button class="step-btn ${cls}" onclick="goStep(${i})"><span class="step-num">${i<state.step?"\u2713":i+1}</span><span class="step-label">${s}</span></button>`;
+  if(i<STEPS.length-1)h+=`<div class="step-sep ${i<state.step?"done":"pending"}"></div>`;
+ });
+ bar.innerHTML=h;
+}
 function toggleAhead(){aheadOpen=!aheadOpen;renderAhead();}
-function renderAhead(){const el=document.getElementById("ahead");if(!el)return;
-let h=`<button class="ahead-toggle" onclick="toggleAhead()" aria-expanded="${aheadOpen}"><span>What\u2019s ahead: the seven steps and what each one needs</span><span>${aheadOpen?"\u2212":"+"}</span></button>`;
-if(aheadOpen){h+=`<div class="ahead-body"><p class="ahead-lead">You can open any step from the bar above to look around. Only Group Data has to be filled in before the results mean anything.</p>`;
-STEP_INFO.forEach((s,i)=>{h+=`<div class="ahead-item"><span class="ahead-n">${i+1}</span><div><div class="ahead-t">${s[0]}</div><div class="ahead-d">${s[1]}</div></div></div>`;});
-h+=`</div>`;}
-el.innerHTML=h;}
-
-function renderSteps(){const bar=document.getElementById("steps-bar");let h="";STEPS.forEach((s,i)=>{const cls=i===state.step?"active":i<state.step?"done":"pending";h+=`<button class="step-btn ${cls}" onclick="goStep(${i})"><span class="step-num">${i<state.step?"\u2713":i+1}</span><span class="step-label">${s}</span></button>`;if(i<STEPS.length-1)h+=`<div class="step-sep ${i<state.step?"done":"pending"}"></div>`;});bar.innerHTML=h;}
-
-function renderNav(){const nav=document.getElementById("nav-buttons");if(state.step>=6){nav.innerHTML="";return;}
-nav.innerHTML=`<button class="btn btn-secondary" ${state.step===0?"disabled":""} onclick="goStep(${state.step-1})">Back</button><button class="btn btn-primary" ${canProceed()?"":"disabled"} onclick="goStep(${state.step+1})">${state.step===5?"Generate report":"Continue"}</button>`;}
-
+function renderAhead(){
+ const el=document.getElementById("ahead");if(!el)return;
+ let h=`<button class="ahead-toggle" onclick="toggleAhead()" aria-expanded="${aheadOpen}"><span>What\u2019s ahead: the seven steps and what each one needs</span><span>${aheadOpen?"\u2212":"+"}</span></button>`;
+ if(aheadOpen){
+  h+=`<div class="ahead-body"><p class="ahead-lead">You can open any step from the bar above to look around. Only Comparisons has to be filled in before the results mean anything.</p>`;
+  STEP_INFO.forEach((s,i)=>{h+=`<div class="ahead-item"><span class="ahead-n">${i+1}</span><div><div class="ahead-t">${s[0]}</div><div class="ahead-d">${s[1]}</div></div></div>`;});
+  h+=`</div>`;
+ }
+ el.innerHTML=h;
+}
+function renderNav(){
+ const nav=document.getElementById("nav-buttons");
+ if(state.step>=6){nav.innerHTML="";return;}
+ nav.innerHTML=`<button class="btn btn-secondary" ${state.step===0?"disabled":""} onclick="goStep(${state.step-1})">Back</button><button class="btn btn-primary" ${canProceed()?"":"disabled"} onclick="goStep(${state.step+1})">${state.step===5?"Generate report":"Continue"}</button>`;
+}
 function goStep(n){if(state.step<6)sync();state.step=n;render();}
 
-function render(){renderSteps();renderAhead();renderNav();const el=document.getElementById("step-content");el.innerHTML="";
-switch(state.step){
-case 0:el.innerHTML=`<h2>System info</h2><p class="desc">Identify the AI system under test and the organization conducting the assessment.</p>
+function bindInputs(){
+ document.querySelectorAll("#step-content input, #step-content select").forEach(e=>{
+  e.addEventListener("input",()=>{sync();renderNav();refreshLive();});
+ });
+}
+function refreshLive(){
+ if(state.step!==1)return;
+ state.comparisons.forEach((c,i)=>{
+  const s=compStats(c);
+  const t1=document.getElementById("c"+i+"-t1"),t2=document.getElementById("c"+i+"-t2"),hint=document.getElementById("c"+i+"-hint");
+  if(t1)t1.textContent=s.n1;
+  if(t2)t2.textContent=s.n2;
+  if(hint)hint.textContent=s.ready?("Total observations: "+(s.n1+s.n2)+"."+(s.small?" One or both groups have fewer than 30 observations, so Fisher's Exact Test will carry this comparison.":"")):"";
+ });
+}
+
+const PREVIEW_BANNER=`<div class="preview-banner"><strong>Preview only \u2014 these are not your results.</strong>You are looking ahead before entering data. Every figure on this page is a placeholder produced from empty counts, including any classification shown. Go to step 2, Comparisons, and enter your outcome counts to see real results.</div>`;
+
+function comparisonTable(showAdj){
+ const st=allStats();const adj=adjustedPs();
+ let h=`<table class="cmp-table"><thead><tr><th>Comparison</th><th>Rates</th><th>DI ratio</th><th>Quantitative</th>`;
+ if(showAdj)h+=`<th>p (raw)</th><th>p (Holm)</th>`;
+ h+=`<th>Classification</th></tr></thead><tbody>`;
+ st.forEach((s,i)=>{
+  if(!s.ready){h+=`<tr class="dim"><td>${esc(s.name)}</td><td colspan="${showAdj?6:3}">Incomplete, no counts entered</td></tr>`;return;}
+  const f=finalClassFor(s);const sv=SEV[f];
+  h+=`<tr><td>${esc(s.name)}</td><td class="mono">${pct(s.rateA)} / ${pct(s.rateB)}</td><td class="mono">${s.di.toFixed(3)}</td><td>${s.q}</td>`;
+  if(showAdj)h+=`<td class="mono">${fmtP(s.bestP)}</td><td class="mono">${adj[i]!=null?fmtP(adj[i]):"\u2014"}</td>`;
+  h+=`<td><span class="cmp-badge" style="background:${sv.bg};color:${sv.text};border-color:${sv.border}">${f}</span></td></tr>`;
+ });
+ h+=`</tbody></table>`;
+ return h;
+}
+
+function render(){
+ renderSteps();renderAhead();renderNav();
+ const el=document.getElementById("step-content");el.innerHTML="";
+ switch(state.step){
+
+ case 0:
+  el.innerHTML=`<h2>System info</h2><p class="desc">Identify the AI system under test and the organization conducting the assessment. These apply to every comparison.</p>
 <div class="field"><label>Organization name</label><input type="text" id="f-agency" value="${esc(state.agencyName)}" placeholder="Your organization"></div>
 <div class="field"><label>AI system name *</label><input type="text" id="f-sysname" value="${esc(state.sysName)}" placeholder="e.g., Benefits Eligibility Review Tool"></div>
 <div class="field"><label>System ID or register ID</label><input type="text" id="f-regid" value="${esc(state.regId)}" placeholder="e.g., AI-2026-001"></div>
 <div class="field"><label>AI system owner *</label><input type="text" id="f-owner" value="${esc(state.owner)}" placeholder="Name and title"></div>
 <div class="grid-2"><div class="field"><label>Test date</label><input type="date" id="f-date" value="${state.testDate}"></div><div class="field"><label>Test type</label><select id="f-type"><option ${state.testType==="Pre-Deployment"?"selected":""}>Pre-Deployment</option><option ${state.testType==="Recurring"?"selected":""}>Recurring</option><option ${state.testType==="Incident-Triggered"?"selected":""}>Incident-Triggered</option></select></div></div>`;
-document.querySelectorAll("#step-content input, #step-content select").forEach(e=>e.addEventListener("input",()=>{sync();renderNav();}));break;
+  bindInputs();break;
 
-case 1:{const{n1,n2}=nums();el.innerHTML=`<h2>Group data</h2><p class="desc">Enter the two groups you are comparing and the outcome counts. Groups should be defined by protected class (e.g., race, ethnicity, sex, age, disability status) per applicable civil rights requirements.</p>
-<div class="grid-2"><div class="field"><label>Group A name</label><input type="text" id="f-ga" value="${esc(state.groupAName)}" placeholder="e.g., Hispanic"></div><div class="field"><label>Group B name</label><input type="text" id="f-gb" value="${esc(state.groupBName)}" placeholder="e.g., Non-Hispanic"></div></div>
-<div class="tbl-wrap"><table><thead><tr><th></th><th>Positive outcome<br><span style="font-weight:400;color:#6b7280;font-size:.75rem">(approved, selected, etc.)</span></th><th>Negative outcome<br><span style="font-weight:400;color:#6b7280;font-size:.75rem">(denied, not selected, etc.)</span></th><th>Total</th></tr></thead><tbody>
-<tr><td>${esc(state.groupAName)}</td><td><input type="number" min="0" id="f-ap" class="input-center" value="${state.groupAPos}" placeholder="0"></td><td><input type="number" min="0" id="f-an" class="input-center" value="${state.groupANeg}" placeholder="0"></td><td style="text-align:center;font-weight:500" id="total-a">${n1}</td></tr>
-<tr><td>${esc(state.groupBName)}</td><td><input type="number" min="0" id="f-bp" class="input-center" value="${state.groupBPos}" placeholder="0"></td><td><input type="number" min="0" id="f-bn" class="input-center" value="${state.groupBNeg}" placeholder="0"></td><td style="text-align:center;font-weight:500" id="total-b">${n2}</td></tr>
-</tbody></table></div>
-<div id="step1-hint">${(n1>0&&n2>0)?`<p class="hint">Total observations: ${n1+n2}. ${(n1<30||n2<30)?"Note: One or both groups have fewer than 30 observations. Fisher's Exact Test will be the primary test.":""}</p>`:""}</div>`;
-document.querySelectorAll("#step-content input").forEach(e=>e.addEventListener("input",()=>{sync();const{n1,n2}=nums();const ta=document.getElementById("total-a");const tb=document.getElementById("total-b");if(ta)ta.textContent=n1;if(tb)tb.textContent=n2;const hint=document.getElementById("step1-hint");if(hint)hint.innerHTML=(n1>0&&n2>0)?`<p class="hint">Total observations: ${n1+n2}. ${(n1<30||n2<30)?"Note: One or both groups have fewer than 30 observations. Fisher's Exact Test will be the primary test.":""}</p>`:"";renderNav();}));break;}
+ case 1:{
+  let h=`<h2>Comparisons</h2><p class="desc">Each comparison is one pair of groups tested on one outcome. Groups should be defined by protected class (e.g., race, ethnicity, sex, age, disability status) per applicable civil rights requirements. Add a comparison for each pair the use case requires.</p>`;
+  state.comparisons.forEach((c,i)=>{
+   const s=compStats(c);
+   h+=`<div class="cmp-card"><div class="cmp-head"><span class="cmp-n">Comparison ${i+1}</span>${state.comparisons.length>1?`<button class="cmp-remove" onclick="removeComparison(${i})">Remove</button>`:""}</div>
+<div class="field"><label>Label (optional)</label><input type="text" id="c${i}-label" value="${esc(c.label)}" placeholder="e.g., Race: Black vs White"></div>
+<div class="grid-2"><div class="field"><label>Group A name</label><input type="text" id="c${i}-aName" value="${esc(c.aName)}" placeholder="e.g., Hispanic"></div><div class="field"><label>Group B name</label><input type="text" id="c${i}-bName" value="${esc(c.bName)}" placeholder="e.g., Non-Hispanic"></div></div>
+<table class="data-table"><thead><tr><th></th><th>Positive outcome<br><span class="th-sub">(approved, selected, etc.)</span></th><th>Negative outcome<br><span class="th-sub">(denied, not selected, etc.)</span></th><th>Total</th></tr></thead><tbody>
+<tr><td class="rowlab">${esc(c.aName)}</td><td><input type="number" min="0" id="c${i}-aPos" value="${esc(c.aPos)}" placeholder="0"></td><td><input type="number" min="0" id="c${i}-aNeg" value="${esc(c.aNeg)}" placeholder="0"></td><td class="mono" id="c${i}-t1">${s.n1}</td></tr>
+<tr><td class="rowlab">${esc(c.bName)}</td><td><input type="number" min="0" id="c${i}-bPos" value="${esc(c.bPos)}" placeholder="0"></td><td><input type="number" min="0" id="c${i}-bNeg" value="${esc(c.bNeg)}" placeholder="0"></td><td class="mono" id="c${i}-t2">${s.n2}</td></tr>
+</tbody></table><p class="hint" id="c${i}-hint">${s.ready?("Total observations: "+(s.n1+s.n2)+"."+(s.small?" One or both groups have fewer than 30 observations, so Fisher's Exact Test will carry this comparison.":"")):""}</p></div>`;
+  });
+  h+=`<button class="btn btn-secondary" onclick="addComparison()">+ Add comparison</button>`;
+  if(state.comparisons.length>1)h+=`<p class="hint">Running several comparisons raises the chance that one crosses the significance threshold by chance. The Statistics step reports a multiplicity-adjusted p-value alongside the raw one for that reason.</p>`;
+  el.innerHTML=h;bindInputs();break;}
 
-case 2:{const hd=hasData();const di=calcDI();const q=hd?classifyDI(di):null;const s=hd?SEV[q]:NEUTRAL;const{rateA,rateB}=rates();const lo=Math.min(rateA,rateB),hi=Math.max(rateA,rateB);const loG=rateA<rateB?state.groupAName:state.groupBName;const hiG=rateA<rateB?state.groupBName:state.groupAName;
-el.innerHTML=`<h2>Metrics</h2><p class="desc">Calculated from your contingency table. The Disparate Impact Ratio uses the four-fifths rule from the Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4).</p>
-<div class="metric-row"><div class="metric-box"><div class="metric-label">Selection rates</div><div style="display:flex;justify-content:space-between;font-size:.875rem;margin-top:.5rem"><span>${esc(state.groupAName)}:</span><span style="font-family:monospace;font-weight:500">${hd?(rateA*100).toFixed(1)+"%":"\u2014"}</span></div><div style="display:flex;justify-content:space-between;font-size:.875rem;margin-top:.25rem"><span>${esc(state.groupBName)}:</span><span style="font-family:monospace;font-weight:500">${hd?(rateB*100).toFixed(1)+"%":"\u2014"}</span></div></div>
-<div class="metric-box sev" style="border-color:${s.border};background:${s.bg}"><div class="metric-label" style="color:${s.text}">Disparate impact ratio</div><div class="metric-val" style="color:${s.text}">${hd?di.toFixed(3):"\u2014"}</div><div class="metric-sub" style="color:${s.text}">${hd?"Quantitative: "+q:"Awaiting group data"}</div></div></div>
-<div class="info"><div class="info-title">Interpretation</div>${hd?`<p>${esc(loG)} has a selection rate of ${(lo*100).toFixed(1)}%, compared to ${esc(hiG)} at ${(hi*100).toFixed(1)}%. The ratio is ${di.toFixed(3)}, which is ${di>=.8?"at or above":"below"} the 0.80 threshold.</p>`:`<p>Selection rates and the disparate impact ratio appear here once you enter outcome counts on step 2, Group Data.</p>`}${hd&&di<.8?`<p style="font-weight:500;color:${s.text};margin-top:.5rem">This falls in the ${q} zone. Statistical significance testing on the next step will confirm whether this disparity is likely real or could be due to chance.</p>`:""}</div>
-<div style="border:1px solid #e5e7eb;border-radius:.75rem;padding:1rem"><div class="metric-label" style="margin-bottom:.5rem">Threshold reference</div><table class="thresh-table"><thead><tr><th style="text-align:left">Metric</th><th>Pass (&ge;0.90)</th><th>Low (0.80-0.89)</th><th>Moderate (0.65-0.79)</th><th>Critical (&lt;0.65)</th></tr></thead><tbody><tr><td>DI Ratio</td>${["None","Low","Moderate","Critical"].map(c=>`<td><span class="dot ${q===c?"active":"dim"}" style="background:${SEV[c].border};color:${SEV[c].border}"></span></td>`).join("")}</tr></tbody></table></div>`;break;}
+ case 2:{
+  let h=`<h2>Metrics</h2><p class="desc">Calculated from your contingency tables. The Disparate Impact Ratio uses the four-fifths rule from the Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4).</p>`;
+  if(!hasData()){h+=PREVIEW_BANNER;h+=`<p>Selection rates and disparate impact ratios appear here once you enter outcome counts on step 2, Comparisons.</p>`;}
+  else{
+   h+=comparisonTable(false);
+   const drv=drivingStat();
+   h+=`<div class="info"><div class="info-title">Interpretation</div><p>${esc(drv.lowG)} has a selection rate of ${pct(drv.lowR)}, compared to ${esc(drv.hiG)} at ${pct(drv.hiR)}, in ${esc(drv.name)}. The ratio is ${drv.di.toFixed(3)}, which is ${drv.di>=.8?"at or above":"below"} the 0.80 threshold.</p>${drv.di<.8?`<p style="font-weight:500;color:${SEV[drv.q].text};margin-top:.5rem">This is the comparison driving the result and it falls in the ${drv.q} zone. Statistical significance testing on the next step will confirm whether the disparity is likely real or could be due to chance.</p>`:""}</div>`;
+   h+=`<div style="border:1px solid #e5e7eb;border-radius:.75rem;padding:1rem"><div class="metric-label" style="margin-bottom:.5rem">Threshold reference</div><table class="thresh-table"><thead><tr><th style="text-align:left">Metric</th><th>Pass (&ge;0.90)</th><th>Low (0.80-0.89)</th><th>Moderate (0.65-0.79)</th><th>Critical (&lt;0.65)</th></tr></thead><tbody><tr><td>DI Ratio</td>${["None","Low","Moderate","Critical"].map(cl=>`<td><span class="dot ${drv.q===cl?"active":"dim"}" style="background:${SEV[cl].border};color:${SEV[cl].border}"></span></td>`).join("")}</tr></tbody></table></div>`;
+  }
+  el.innerHTML=h;break;}
 
-case 3:{const hd=hasData();const{a,b,c,d,n1,n2}=nums();const{rateA,rateB}=rates();const fp=n1>0&&n2>0?fisherExact(a,b,c,d):1;const cr=n1>0&&n2>0?chi2(a,b,c,d):{valid:false,stat:0,p:1};const zr=n1>0&&n2>0?zTest(rateA,n1,rateB,n2):{valid:false,z:0,p:1};const bp=bestP();
-const tests=[{name:"Fisher's Exact Test",note:"Valid for all sample sizes. Recommended default.",p:fp,valid:true,stat:null,sl:null},{name:"Chi-Square Test",note:cr.valid?"All expected cell counts are 5+. Valid.":"One or more expected cell counts below 5. Not valid for this data. Use Fisher's instead.",p:cr.p,valid:cr.valid,stat:cr.stat,sl:"\u03C7\u00B2"},{name:"Two-Proportion Z-Test",note:zr.valid?"Both groups have 30+ observations. Valid.":"One or both groups have fewer than 30 observations. Not valid for this data.",p:zr.p,valid:zr.valid,stat:zr.z,sl:"Z"}];
-if(!hd){tests.forEach(t=>{t.valid=false;t.stat=null;t.note="Awaiting group data. This test runs once outcome counts are entered on step 2.";});}
-el.innerHTML=`<h2>Statistics</h2><p class="desc">All three standard statistical significance tests are run automatically. Each test determines whether the observed disparity could have occurred by chance.</p>
-${tests.map(t=>`<div class="test-card${t.valid?"":" disabled"}"><div class="test-header"><div class="test-name">${t.name}</div>${t.valid?`<span class="badge ${pBadge(t.p)}">p = ${fmtP(t.p)} ${pLabel(t.p)}</span>`:`<span class="badge badge-gray">${hd?"Not applicable":"Awaiting data"}</span>`}</div><div class="test-note">${t.note}</div>${t.valid&&t.stat!==null?`<div class="test-stat">${t.sl} = ${t.stat.toFixed(4)}</div>`:""}</div>`).join("")}
-<div class="info"><div class="info-title">${hd?"Best available p-value: "+fmtP(bp):"Best available p-value: \u2014"}</div><p>${!hd?"Significance results appear here once you enter outcome counts on step 2, Group Data.":bp<=.01?"Highly significant. The disparity is very unlikely due to chance. Consider escalating by one severity level.":bp<=.05?"Significant. The disparity is unlikely due to chance. The quantitative finding stands as classified.":bp<=.10?"Marginal. The result is borderline. The finding may be reduced by one level. Schedule a follow-up test with a larger sample.":"Not significant. The observed disparity could reasonably be due to chance. The finding is reduced by one severity level."}</p></div>`;break;}
+ case 3:{
+  let h=`<h2>Statistics</h2><p class="desc">All three standard significance tests run on every comparison. Each determines whether an observed disparity could have occurred by chance.</p>`;
+  if(!hasData()){h+=PREVIEW_BANNER;h+=`<p>Significance results appear here once you enter outcome counts on step 2, Comparisons.</p>`;}
+  else{
+   const st=allStats();const adj=adjustedPs();const m=readyStats().length;
+   h+=comparisonTable(true);
+   h+=`<div class="info"><div class="info-title">Per-comparison detail</div></div>`;
+   st.forEach((s,i)=>{
+    if(!s.ready)return;
+    const tests=[{n:"Fisher's Exact",p:s.fp,valid:true,stat:null,sl:null},
+     {n:"Chi-Square",p:s.cr.p,valid:s.cr.valid,stat:s.cr.stat,sl:"\u03C7\u00B2"},
+     {n:"Two-Proportion Z",p:s.zr.p,valid:s.zr.valid,stat:s.zr.z,sl:"Z"}];
+    h+=`<div class="test-card"><div class="test-header"><div class="test-name">${esc(s.name)}</div><span class="badge ${pBadge(s.bestP)}">best p = ${fmtP(s.bestP)} ${pLabel(s.bestP)}</span></div>
+<div class="stats-inline">${tests.map(t=>`<span class="stat-chip${t.valid?"":" dim"}">${t.n}: ${t.valid?fmtP(t.p)+(t.stat!==null?" ("+t.sl+" = "+t.stat.toFixed(3)+")":""):"not applicable"}</span>`).join("")}</div>
+<div class="test-note">Holm-adjusted p = ${adj[i]!=null?fmtP(adj[i]):"\u2014"}${s.small?". One or both groups are under 30 observations, so Fisher's Exact carries this comparison and power is limited.":"."}</div></div>`;
+   });
+   h+=`<div class="info"><div class="info-title">On running ${m} comparison${m===1?"":"s"}</div><p>${m===1?"A single comparison needs no multiplicity adjustment. The raw p-value governs the finding.":"Each additional comparison raises the chance that one crosses the 0.05 threshold by chance alone. With "+m+" comparisons that chance is roughly "+Math.round((1-Math.pow(.95,m))*100)+" percent if no real disparity exists anywhere. The Holm-Bonferroni column adjusts for this."}</p><p style="margin-top:.5rem"><strong>The adjustment is advisory.</strong> Classification continues to follow the raw p-value under your organization\u2019s classification policy. A finding is never reduced solely because other comparisons were tested. The adjusted value is shown so the Council can weigh how many tests were run when reading the result.</p></div>`;
+  }
+  el.innerHTML=h;break;}
 
-case 4:{const ctxDefs={decisionType:{label:"Decision type",opts:["Informational (Standard)","Influences human decision (Elevated, +1)","Directly determines outcomes (High, +2)"],scores:[0,1,2]},affectedPop:{label:"Affected population",opts:["Internal staff only (Standard)","General public (Elevated, +1)","Vulnerable populations (High, +2)"],scores:[0,1,2]},scale:{label:"Scale of impact",opts:["< 100 decisions/year (Standard)","100 - 10,000 decisions/year (Elevated, +1)","> 10,000 decisions/year (High, +2)"],scores:[0,1,2]},reversibility:{label:"Reversibility",opts:["Easily reversed (Standard)","Reversible with effort (Elevated, +1)","Difficult to reverse (High, +2)"],scores:[0,1,2]}};
-const cm=ctxMax();
-el.innerHTML=`<h2>Context</h2><p class="desc">Assess the real-world context of the AI system. The highest-scoring factor determines the severity adjustment applied to the quantitative finding.</p>
-${Object.entries(ctxDefs).map(([k,c])=>`<div class="ctx-group"><label>${c.label}</label><div class="ctx-opts">${c.opts.map((o,i)=>`<button class="ctx-btn${state.context[k]===c.scores[i]?" selected":""}" onclick="setCtx('${k}',${c.scores[i]})">${o}</button>`).join("")}</div></div>`).join("")}
-<div class="info"><span style="font-weight:500">Highest context factor: </span>${cm===0?"Standard (no adjustment)":cm===1?"Elevated (+1 severity level)":"High (+2 severity levels)"}</div>`;break;}
+ case 4:{
+  const ctxDefs={decisionType:{label:"Decision type",opts:["Informational (Standard)","Influences human decision (Elevated, +1)","Directly determines outcomes (High, +2)"],scores:[0,1,2]},
+   affectedPop:{label:"Affected population",opts:["Internal staff only (Standard)","General public (Elevated, +1)","Vulnerable populations (High, +2)"],scores:[0,1,2]},
+   scale:{label:"Scale of impact",opts:["< 100 decisions/year (Standard)","100 - 10,000 decisions/year (Elevated, +1)","> 10,000 decisions/year (High, +2)"],scores:[0,1,2]},
+   reversibility:{label:"Reversibility",opts:["Easily reversed (Standard)","Reversible with effort (Elevated, +1)","Difficult to reverse (High, +2)"],scores:[0,1,2]}};
+  let h=`<h2>Context</h2><p class="desc">Assess the real-world context of the AI system. The highest-scoring factor determines the severity adjustment. Context is a property of the system, so the same adjustment applies to every comparison.</p>`;
+  Object.keys(ctxDefs).forEach(k=>{
+   const cfg=ctxDefs[k];
+   h+=`<div class="field"><label>${cfg.label}</label><div class="ctx-opts">${cfg.opts.map((o,i)=>`<button class="ctx-btn ${state.context[k]===cfg.scores[i]?"sel":""}" onclick="setCtx('${k}',${cfg.scores[i]})">${o}</button>`).join("")}</div></div>`;
+  });
+  h+=`<div class="info"><span style="font-weight:500">Highest context factor: </span>${ctxMax()===0?"Standard (no adjustment)":ctxMax()===1?"Elevated (+1 severity level)":"High (+2 severity levels)"}</div>`;
+  el.innerHTML=h;break;}
 
-case 5:{const hd=hasData();const fc=hd?finalClass():null;const s=hd?SEV[fc]:NEUTRAL;const di=calcDI();const q=hd?classifyDI(di):null;const bp=bestP();const cm=ctxMax();
-el.innerHTML=`<h2>Classification</h2><p class="desc">The final classification combines the quantitative disparity, statistical significance, and context assessment.</p>
-<div class="class-box" style="border-color:${s.border};background:${s.bg}"><div class="class-label" style="color:${s.text}">${hd?"Final classification":"Final classification: not yet calculated"}</div><div class="class-val" style="color:${s.text}">${hd?fc:"\u2014"}</div></div>
-<div class="breakdown"><div class="breakdown-title">How this was determined:</div><div class="bk-row"><span>Quantitative (DI Ratio: ${hd?di.toFixed(3):"\u2014"})</span><span>${hd?q:"\u2014"}</span></div><div class="bk-row"><span>Context adjustment</span><span>${hd?(cm===0?"None":cm===1?"+1 level":"+2 levels"):"\u2014"}</span></div><div class="bk-row"><span>Statistical significance (p = ${hd?fmtP(bp):"\u2014"})</span><span>${hd?(bp>.10?"-1 level":bp<=.01?"+1 level":"No change"):"\u2014"}</span></div><div class="bk-row bk-divider"><span style="font-weight:500">Final</span><span style="font-weight:500;color:${s.text}">${hd?fc:"\u2014"}</span></div></div>
-${hd?`<div class="info" style="margin-top:1rem"><div class="info-title">Re-review frequency</div><p><strong>${reviewRec(fc).interval}</strong> \u2014 target date ${nextDue(reviewRec(fc).days)}.</p><p style="margin-top:.35rem">${reviewRec(fc).text}</p></div>`:""}
-<div class="info"><div class="info-title">Recommended response:</div>${!hd?"<p>The recommended response depends on the final classification, which appears once group data is entered.</p>":fc==="Critical"?"<p>Immediate suspension of AI system pending remediation. Governance body review required before reactivation. Leadership notification.</p>":fc==="Moderate"?"<p>Remediation plan due within 30 days. Add human review checkpoint for affected decisions. Notify governance body. System may continue with enhanced monitoring.</p>":fc==="Low"?"<p>Document finding and root cause analysis. Monitor at next scheduled test. No system interruption required. If Low persists across two consecutive test cycles, escalate to Moderate.</p>":"<p>Document results. Continue standard monitoring schedule.</p>"}</div>`;break;}
+ case 5:{
+  const fcAll=hasData()?overallClass():null;const s=hasData()?SEV[fcAll]:NEUTRAL;
+  let h=`<h2>Classification</h2><p class="desc">Each comparison is classified from its own disparity and significance, with the shared context adjustment. The overall result takes the most severe.</p>`;
+  if(!hasData())h+=PREVIEW_BANNER;
+  h+=`<div class="class-box" style="border-color:${s.border};background:${s.bg}"><div class="class-label" style="color:${s.text}">${hasData()?"Overall classification":"Overall classification: not yet calculated"}</div><div class="class-val" style="color:${s.text}">${hasData()?fcAll:"\u2014"}</div>${hasData()&&readyStats().length>1?`<div class="class-sub" style="color:${s.text}">Most severe of ${readyStats().length} comparisons</div>`:""}</div>`;
+  if(hasData()){
+   h+=comparisonTable(true);
+   const rec=reviewRec(fcAll);
+   h+=`<div class="info"><div class="info-title">Plain-language summary</div>${buildNarrative().map(p=>`<p style="margin-bottom:.5rem">${esc(p)}</p>`).join("")}</div>`;
+   h+=`<div class="info"><div class="info-title">Re-review frequency</div><p><strong>${rec.interval}</strong> \u2014 target date ${nextDue(rec.days)}.</p><p style="margin-top:.35rem">${rec.text}</p></div>`;
+  }
+  h+=`<div class="info"><div class="info-title">Recommended response:</div>${!hasData()?"<p>The recommended response depends on the overall classification, which appears once comparison data is entered.</p>":fcAll==="Critical"?"<p>Immediate suspension of AI system pending remediation. Governance body review required before reactivation. Leadership notification.</p>":fcAll==="Moderate"?"<p>Remediation plan due within 30 days. Add human review checkpoint for affected decisions. Notify governance body. System may continue with enhanced monitoring.</p>":fcAll==="Low"?"<p>Document finding and root cause analysis. Monitor at next scheduled test. No system interruption required. If Low persists across two consecutive test cycles, escalate to Moderate.</p>":"<p>Document results. Continue standard monitoring schedule.</p>"}</div>`;
+  el.innerHTML=h;break;}
 
-case 6:{const hd=hasData();
-if(!hd){el.innerHTML=`<h2>Report</h2><p class="desc">The report is generated from your test data.</p><div class="preview-banner"><strong>No report yet \u2014 group data is required.</strong>A bias testing report cannot be produced without outcome counts. Enter your two groups and their favourable and unfavourable counts on step 2, Group Data, and the report will be generated here.</div><div class="btn-group"><button class="btn btn-primary" onclick="goStep(1)">Go to Group Data</button><button class="btn btn-secondary" onclick="goStep(0)">Start new test</button></div>`;break;}
-const fc=finalClass();const s=SEV[fc];const di=calcDI();const q=classifyDI(di);const{a,b,c,d,n1,n2}=nums();const{rateA,rateB}=rates();const fp=n1>0&&n2>0?fisherExact(a,b,c,d):1;const cr=n1>0&&n2>0?chi2(a,b,c,d):{valid:false};const zr=n1>0&&n2>0?zTest(rateA,n1,rateB,n2):{valid:false};const cm=ctxMax();const bp=bestP();
-el.innerHTML=`<h2>Report</h2><p class="desc">Review the summary below. Print or save this report with your AI system's governance records.</p>
+ case 6:{
+  if(!hasData()){
+   el.innerHTML=`<h2>Report</h2><p class="desc">The report is generated from your test data.</p><div class="preview-banner"><strong>No report yet \u2014 comparison data is required.</strong>A bias testing report cannot be produced without outcome counts. Enter at least one comparison on step 2, Comparisons, and the report will be generated here.</div><div class="btn-group"><button class="btn btn-primary" onclick="goStep(1)">Go to Comparisons</button><button class="btn btn-secondary" onclick="goStep(0)">Start new test</button></div>`;
+   break;
+  }
+  const fcAll=overallClass();const s=SEV[fcAll];const rec=reviewRec(fcAll);const st=allStats();const adj=adjustedPs();const m=readyStats().length;
+  let h=`<h2>Report</h2><p class="desc">Review the summary below, then save it with your AI system's governance records.</p>
 <div class="report" id="report-content">
 <div class="report-header"><div class="report-title">AI Bias Testing Report</div>${state.agencyName?`<div class="report-org">${esc(state.agencyName)}</div>`:""}<div class="report-date">Generated ${new Date().toLocaleDateString()}</div></div>
-<div class="report-grid">${state.agencyName?`<span>Organization:</span><span class="val">${esc(state.agencyName)}</span>`:""}<span>AI System:</span><span class="val">${esc(state.sysName)}</span><span>System ID:</span><span class="val">${state.regId||"N/A"}</span><span>Owner:</span><span class="val">${esc(state.owner)}</span><span>Test Date:</span><span class="val">${state.testDate}</span><span>Test Type:</span><span class="val">${state.testType}</span></div>
-<div class="report-section"><div class="report-section-title">Contingency table</div><table style="border:1px solid #e5e7eb;border-radius:.25rem"><thead><tr style="background:#f9fafb"><th style="text-align:left"></th><th>Positive</th><th>Negative</th><th>Total</th><th>Rate</th></tr></thead><tbody><tr style="border-top:1px solid #e5e7eb"><td style="font-weight:500">${esc(state.groupAName)}</td><td style="text-align:center;font-family:monospace">${a}</td><td style="text-align:center;font-family:monospace">${b}</td><td style="text-align:center;font-family:monospace">${n1}</td><td style="text-align:center;font-family:monospace">${(rateA*100).toFixed(1)}%</td></tr><tr style="border-top:1px solid #e5e7eb"><td style="font-weight:500">${esc(state.groupBName)}</td><td style="text-align:center;font-family:monospace">${c}</td><td style="text-align:center;font-family:monospace">${d}</td><td style="text-align:center;font-family:monospace">${n2}</td><td style="text-align:center;font-family:monospace">${(rateB*100).toFixed(1)}%</td></tr></tbody></table></div>
-<div class="report-section"><div class="report-metrics"><div><span>DI Ratio</span><span class="big">${di.toFixed(3)}</span></div><div><span>Quantitative</span><span style="font-weight:500">${q}</span></div><div><span>Context Adj.</span><span style="font-weight:500">${cm===0?"None":cm===1?"+1":"+2"}</span></div></div></div>
-<div class="report-section"><div class="report-section-title">Statistical tests</div><div class="stats-grid"><div class="stat-box"><div class="stat-name">Fisher's Exact</div><div class="stat-val">p = ${fmtP(fp)}</div></div><div class="stat-box"><div class="stat-name">Chi-Square</div><div class="stat-val">${cr.valid?`\u03C7\u00B2 = ${cr.stat.toFixed(3)}, p = ${fmtP(cr.p)}`:"N/A"}</div></div><div class="stat-box"><div class="stat-name">Z-Test</div><div class="stat-val">${zr.valid?`Z = ${zr.z.toFixed(3)}, p = ${fmtP(zr.p)}`:"N/A"}</div></div></div></div>
-<div class="report-section"><div class="report-final"><span class="report-final-label">Final Classification:</span><span class="report-final-badge" style="background:${s.bg};color:${s.text};border-color:${s.border}">${fc}</span></div></div>
-<div class="report-section"><div class="report-section-title">Re-review frequency</div><div class="report-grid"><span>Recommended interval</span><span class="val">${reviewRec(fc).interval}</span><span>Target next test date</span><span class="val">${nextDue(reviewRec(fc).days)}</span></div><div style="margin-top:.4rem">${reviewRec(fc).text}</div></div>
-<div class="report-section report-methodology"><div>Methodology: Disparate Impact Ratio per Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4). Statistical significance via Fisher's Exact Test, Chi-Square Test of Independence, and/or Two-Proportion Z-Test. Context assessment per NIST AI Risk Management Framework 1.0 (AI 100-1) Measure function.</div><div style="margin-top:4px">References: NIST AI RMF 1.0, NIST SP 1270, EEOC Technical Assistance on AI and Title VII (May 2023).</div></div>
+<div class="report-grid"><span>AI System</span><span class="val">${esc(state.sysName)}</span><span>System ID</span><span class="val">${esc(state.regId)||"N/A"}</span><span>Owner</span><span class="val">${esc(state.owner)}</span><span>Test Date</span><span class="val">${state.testDate}</span><span>Test Type</span><span class="val">${esc(state.testType)}</span><span>Comparisons tested</span><span class="val">${m}</span></div>
+<div class="report-section"><div class="report-section-title">Comparisons</div>${comparisonTable(true)}</div>
+<div class="report-section"><div class="report-section-title">Contingency tables</div><table class="cmp-table"><thead><tr><th>Comparison</th><th>Group</th><th>Positive</th><th>Negative</th><th>Total</th><th>Rate</th></tr></thead><tbody>`;
+  st.forEach(cs=>{
+   if(!cs.ready)return;
+   const c=state.comparisons[st.indexOf(cs)];
+   h+=`<tr><td rowspan="2">${esc(cs.name)}</td><td>${esc(c.aName)}</td><td class="mono">${cs.a}</td><td class="mono">${cs.b}</td><td class="mono">${cs.n1}</td><td class="mono">${pct(cs.rateA)}</td></tr>`;
+   h+=`<tr><td>${esc(c.bName)}</td><td class="mono">${cs.c}</td><td class="mono">${cs.d}</td><td class="mono">${cs.n2}</td><td class="mono">${pct(cs.rateB)}</td></tr>`;
+  });
+  h+=`</tbody></table></div>
+<div class="report-section"><div class="report-section-title">Context assessment</div><div class="report-grid"><span>Decision type</span><span class="val">${["Informational","Influences human decision","Directly determines outcomes"][state.context.decisionType]}</span><span>Affected population</span><span class="val">${["Internal staff only","General public","Vulnerable populations"][state.context.affectedPop]}</span><span>Scale of impact</span><span class="val">${["< 100/year","100 - 10,000/year","> 10,000/year"][state.context.scale]}</span><span>Reversibility</span><span class="val">${["Easily reversed","Reversible with effort","Difficult to reverse"][state.context.reversibility]}</span><span>Severity adjustment</span><span class="val">${ctxMax()===0?"None":"+"+ctxMax()+" level"+(ctxMax()>1?"s":"")}</span></div></div>
+<div class="report-section"><div class="report-final"><span class="report-final-label">Overall Classification:</span><span class="report-final-badge" style="background:${s.bg};color:${s.text};border-color:${s.border}">${fcAll}</span>${m>1?`<span class="report-final-label">most severe of ${m} comparisons</span>`:""}</div></div>
+<div class="report-section"><div class="report-section-title">Summary</div>${buildNarrative().map(p=>`<p style="margin-bottom:6px">${esc(p)}</p>`).join("")}</div>
+<div class="report-section"><div class="report-section-title">Re-review frequency</div><div class="report-grid"><span>Recommended interval</span><span class="val">${rec.interval}</span><span>Target next test date</span><span class="val">${nextDue(rec.days)}</span></div><div style="margin-top:.4rem">${rec.text}</div></div>
+<div class="report-section report-methodology"><div>Methodology: Disparate Impact Ratio per Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4). Statistical significance via Fisher's Exact Test, Chi-Square Test of Independence, and Two-Proportion Z-Test, with the strongest applicable result used. Holm-Bonferroni adjustment reported for multiple comparisons and advisory only. Context assessment per NIST AI Risk Management Framework 1.0 (AI 100-1) Measure function.</div><div style="margin-top:4px">References: NIST AI RMF 1.0, NIST SP 1270, EEOC Technical Assistance on AI and Title VII (May 2023).</div></div>
 </div>
-<div class="btn-group"><button class="btn btn-dark" onclick="printReport()">Save as PDF</button><button class="btn btn-secondary" onclick="goStep(0)">Start new test</button></div><p class="hint" style="text-align:center">Your browser\u2019s print dialog will open. Choose <strong>Save as PDF</strong> as the destination, and keep background graphics enabled so the classification colour is retained.</p>`;break;}
+<div class="btn-group"><button class="btn btn-dark" onclick="printReport()">Save as PDF</button><button class="btn btn-secondary" onclick="goStep(0)">Start new test</button></div>
+<p class="hint" style="text-align:center">Your browser\u2019s print dialog will open. Choose <strong>Save as PDF</strong> as the destination, and keep background graphics enabled so the classification colour is retained.</p>`;
+  el.innerHTML=h;break;}
+ }
 }
-if(state.step>=2&&!hasData()){el.insertAdjacentHTML("afterbegin",`<div class="preview-banner"><strong>Preview only \u2014 these are not your results.</strong>You are looking ahead before entering data. Every figure on this page is a placeholder produced from empty counts, including any classification shown. Go to step 2, Group Data, and enter your outcome counts to see real results.</div>`);}
-}
-
-function setCtx(k,v){state.context[k]=v;render();}
-function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
 
 function printReport(){
-const content=document.getElementById("report-content").innerHTML;
-const w=window.open("","_blank");
-w.document.write(`<!DOCTYPE html><html><head><title>Bias Test Report - ${esc(state.sysName)}</title><style>*,*::before,*::after{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}@media print{@page{margin:14mm}}body{font-family:'DM Sans',system-ui,sans-serif;max-width:700px;margin:2rem auto;color:#1a1a1a;font-size:13px;line-height:1.6}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:6px 10px;text-align:left}.report-header{text-align:center;border-bottom:1px solid #e5e7eb;padding-bottom:1rem;margin-bottom:1rem}.report-title{font-size:1.125rem;font-weight:700}.report-org{font-size:.875rem;color:#4b5563}.report-date{font-size:.75rem;color:#9ca3af}.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:1rem}.report-grid .val{font-weight:500}.report-section{border-top:1px solid #e5e7eb;padding-top:.75rem;margin-top:.75rem}.report-section-title{font-size:.75rem;font-weight:500;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}.stat-box{background:#f9fafb;border-radius:.375rem;padding:.5rem;font-size:.75rem}.stat-name{font-weight:500}.stat-val{font-family:monospace}.report-final{display:flex;align-items:center;gap:.75rem}.report-final-label{font-size:.75rem;color:#6b7280}.report-final-badge{padding:.5rem 1rem;border-radius:.5rem;font-weight:700;font-size:1.125rem;border-width:2px;border-style:solid}.report-methodology{font-size:.75rem;color:#6b7280;line-height:1.5}.report-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}.report-metrics div span:first-child{display:block;font-size:.75rem;color:#6b7280}.big{font-family:monospace;font-weight:700;font-size:1.125rem}</style></head><body>${content}</body></html>`);
-w.document.close();w.print();}
+ const content=document.getElementById("report-content").innerHTML;
+ const w=window.open("","_blank");
+ w.document.write(`<!DOCTYPE html><html><head><title>Bias Test Report - ${esc(state.sysName)}</title><style>*,*::before,*::after{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}@media print{@page{margin:14mm}}body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;color:#1a1a1a;font-size:12.5px;line-height:1.55}table{border-collapse:collapse;width:100%;margin:6px 0}th,td{border:1px solid #ddd;padding:5px 8px;text-align:left;font-size:11.5px}th{background:#f3f4f6}.mono{font-family:monospace}.report-header{text-align:center;border-bottom:1px solid #e5e7eb;padding-bottom:1rem;margin-bottom:1rem}.report-title{font-size:1.125rem;font-weight:700}.report-org{font-size:.875rem;color:#4b5563}.report-date{font-size:.75rem;color:#9ca3af}.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:1rem}.report-grid .val{font-weight:500}.report-section{border-top:1px solid #e5e7eb;padding-top:.75rem;margin-top:.75rem}.report-section-title{font-size:.75rem;font-weight:500;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}.report-final{display:flex;align-items:center;gap:.75rem}.report-final-label{font-size:.75rem;color:#6b7280}.report-final-badge{padding:.5rem 1rem;border-radius:.5rem;font-weight:700;font-size:1.125rem;border-width:2px;border-style:solid}.report-methodology{font-size:.7rem;color:#6b7280;line-height:1.5}.cmp-badge{padding:2px 8px;border-radius:9999px;font-size:10.5px;font-weight:600;border:1px solid}p{margin:0 0 6px}</style></head><body>${content}</body></html>`);
+ w.document.close();w.print();
+}
 
 render();
+
 </script>
 </body>
 </html>

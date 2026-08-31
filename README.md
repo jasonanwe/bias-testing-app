@@ -14,7 +14,9 @@ Both produce identical results. The standalone build is the one to use if you ju
 
 ## What it does
 
-You enter two groups defined by a protected class along with their favourable and unfavourable outcome counts. The tool then calculates the selection rate for each group and the disparate impact ratio, evaluated against the four-fifths rule from the Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4).
+You enter one or more comparisons. Each is a pair of groups defined by a protected class, with their favourable and unfavourable outcome counts. Most real testing needs several: race, ethnicity, sex, age, and disability are separate comparisons, and the tool handles them in a single session with one report at the end.
+
+For each comparison the tool calculates the selection rate per group and the disparate impact ratio, evaluated against the four-fifths rule from the Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4).
 
 It runs three tests of statistical significance and uses the strongest applicable result: Fisher's Exact Test, which is valid at any sample size, the Chi-Square Test of Independence, which requires expected cell counts of five or more, and the Two-Proportion Z-Test, which requires at least 30 observations per group. Tests that are not valid for your data are marked as such rather than reported.
 
@@ -33,7 +35,13 @@ The quantitative finding comes from the disparate impact ratio:
 
 That finding is then raised by up to two levels based on the highest context score, and adjusted by statistical significance. A result that is not significant (p greater than 0.10) reduces the finding by one level, on the basis that the disparity could reasonably be due to chance. A highly significant result (p at or below 0.01) raises it by one.
 
-The report includes a recommended response and a re-review interval with a target date, scaled to the finding.
+Each comparison is classified on its own, and the overall result for the system takes the most severe, since parity in one comparison does not offset a disparity in another. The report includes a recommended response and a re-review interval with a target date, scaled to the finding.
+
+## Multiple comparisons
+
+Running several tests raises the chance that one crosses the 0.05 threshold by accident. With four comparisons that chance is roughly 19 percent even where no real disparity exists, so a tool that ran ten tests and highlighted the one that came back significant would be misleading by construction.
+
+The tool reports a Holm-Bonferroni adjusted p-value alongside each raw value. The adjustment is advisory and does not change the classification, which continues to follow the raw p-value. This is deliberate: in a civil rights context, suppressing a detected disparity because other groups were also tested is the wrong default. Showing both lets a reviewer weigh how many tests were run without the tool quietly discarding a finding.
 
 ## Plain-language summary
 
@@ -53,7 +61,7 @@ The report step opens your browser's print dialog. Choose "Save as PDF" as the d
 
 This tool is a screening instrument. The four-fifths rule is a threshold for further investigation, not a definitive legal standard, and a passing ratio does not establish that a system is free of bias.
 
-It compares two groups at a time on a single binary outcome. Testing several protected classes, or an outcome that is not a simple favourable or unfavourable split, means running the analysis more than once and interpreting the results together.
+Each comparison is two groups on a single binary outcome. An outcome that is not a simple favourable or unfavourable split needs to be reduced to one before it can be tested.
 
 Statistical tests have limited power at small sample sizes. When a group has fewer than 30 observations, treat the result as directional and gather more data before drawing conclusions.
 
