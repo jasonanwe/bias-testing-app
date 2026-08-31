@@ -1,46 +1,29 @@
-# Dependencies
-node_modules/
-.pnp/
-.pnp.js
-
-# Build output
-dist/
-build/
-.vite/
-
-# Environment files (keeps API keys out of git)
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env
-!.env.example
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-logs/
-*.log
-
-# Editor / IDE
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+ 
+# Editors
 .vscode/
 .idea/
 *.swp
 *.swo
-.DS_Store
-Thumbs.db
-
-# Testing / coverage
-coverage/
-.nyc_output/
-
-# Misc
-.cache/
-.parcel-cache/
-.eslintcache
-
-# OS
-desktop.ini
+*~
+ 
+# Excel lock files (created while a workbook is open)
+~$*.xlsx
+~$*.xlsm
+ 
+# Environment files, in case one is ever added
+.env
+.env.*
+!.env.example
+ 
+# Logs
+*.log
+npm-debug.log*
