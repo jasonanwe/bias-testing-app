@@ -1,110 +1,75 @@
-# Bias Testing App
+# AI Bias Testing Tool
 
-An open source React application for testing AI systems for bias and disparate impact across protected groups. Powered by the Anthropic Claude API.
+A single-file, browser-based tool for running a disparate impact analysis on an AI system and producing a report you can save as a PDF.
+
+It walks through seven steps: system details, group data, metrics, statistical significance, context, classification, and report. Everything runs locally in the browser.
+
+## Two builds
+
+`index.html` is the standalone build: one file, no dependencies, no build step. Download it and open it in any modern browser, host it on GitHub Pages, or run it from `file://` on a machine with no network connection.
+
+`BiasTestingTool.jsx` is the same tool as a React component, for dropping into an existing app. It exports a default component with no required props and expects React 18 or later and Tailwind CSS for styling.
+
+Both produce identical results. The standalone build is the one to use if you just want to run a test.
 
 ## What it does
 
-This tool helps teams evaluate AI systems for fairness by analyzing outputs against common bias metrics, including:
+You enter two groups defined by a protected class along with their favourable and unfavourable outcome counts. The tool then calculates the selection rate for each group and the disparate impact ratio, evaluated against the four-fifths rule from the Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4).
 
-- Demographic parity (equal selection rates across groups)
-- Equalized odds (equal true positive and false positive rates)
-- Predictive parity (equal precision across groups)
-- Disparate impact ratio (four-fifths rule)
+It runs three tests of statistical significance and uses the strongest applicable result: Fisher's Exact Test, which is valid at any sample size, the Chi-Square Test of Independence, which requires expected cell counts of five or more, and the Two-Proportion Z-Test, which requires at least 30 observations per group. Tests that are not valid for your data are marked as such rather than reported.
 
-Upload test data, specify protected groups, and the app uses Claude to generate a structured bias testing report.
+Four context questions then adjust the finding: the type of decision, who it affects, how many decisions are made per year, and how reversible the outcome is. A decision that directly determines outcomes for vulnerable populations at scale carries more weight than an informational output affecting internal staff.
 
-## Requirements
+## How the classification works
 
-- Node.js 18 or later
-- npm (comes with Node.js)
-- An Anthropic API key (get one at [console.anthropic.com](https://console.anthropic.com))
+The quantitative finding comes from the disparate impact ratio:
 
-## Setup
+| Ratio | Finding |
+|---|---|
+| 0.90 and above | None |
+| 0.80 to 0.89 | Low |
+| 0.65 to 0.79 | Moderate |
+| Below 0.65 | Critical |
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/bias-testing-app.git
-   cd bias-testing-app
-   ```
+That finding is then raised by up to two levels based on the highest context score, and adjusted by statistical significance. A result that is not significant (p greater than 0.10) reduces the finding by one level, on the basis that the disparity could reasonably be due to chance. A highly significant result (p at or below 0.01) raises it by one.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+The report includes a recommended response and a re-review interval with a target date, scaled to the finding.
 
-3. Create your environment file:
-   ```bash
-   cp .env.example .env
-   ```
+## Plain-language summary
 
-4. Open `.env` and add your Anthropic API key:
-   ```
-   VITE_ANTHROPIC_API_KEY=sk-ant-...
-   ```
+Alongside the numbers, the tool writes a short narrative explaining what the result means: what was tested, how large the gap is in everyday terms, whether the statistics support treating it as real, which context factors moved the severity, and what happens next. It is generated from the figures by a deterministic function, so the same inputs always produce the same wording and nothing is sent to a model or an API. That matters for a governance record, where a summary that changes between runs would be difficult to defend.
 
-5. Run the development server:
-   ```bash
-   npm run dev
-   ```
+## Privacy
 
-   The app opens at `http://localhost:5173`.
+Every calculation happens in your browser, including the plain-language summary. The tool makes no network requests, stores nothing, and has no analytics, no cookies, and no external dependencies. Fonts are drawn from the system stack rather than a font CDN, so nothing is fetched at load time. Data you enter exists only in the page and disappears when you close the tab.
 
-## Available Scripts
+This matters if you are testing systems that touch sensitive data, because the counts never leave the machine.
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start the development server with hot reload |
-| `npm run build` | Build for production (outputs to `dist/`) |
-| `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run ESLint |
+## Saving the report
 
-## Deployment
+The report step opens your browser's print dialog. Choose "Save as PDF" as the destination and keep background graphics enabled so the classification colour is preserved in the saved file.
 
-### Static hosting (Vercel, Netlify, Azure Static Web Apps, GitHub Pages)
+## Limitations
 
-```bash
-npm run build
-```
+This tool is a screening instrument. The four-fifths rule is a threshold for further investigation, not a definitive legal standard, and a passing ratio does not establish that a system is free of bias.
 
-The `dist/` directory contains the built app ready to deploy to any static host. Remember to configure `VITE_ANTHROPIC_API_KEY` as an environment variable in your hosting platform, not in the repo.
+It compares two groups at a time on a single binary outcome. Testing several protected classes, or an outcome that is not a simple favourable or unfavourable split, means running the analysis more than once and interpreting the results together.
 
-### Self-hosted
+Statistical tests have limited power at small sample sizes. When a group has fewer than 30 observations, treat the result as directional and gather more data before drawing conclusions.
 
-```bash
-npm run build
-npm run preview
-```
+Nothing here is legal advice. Disparate impact analysis sits in a contested area of law that varies by jurisdiction and by the domain the system operates in. Involve counsel before acting on a finding.
 
-## Security Notes
+## Methodology and references
 
-- **Never commit `.env` to git.** The `.gitignore` is configured to exclude it, but always verify before committing.
-- This build exposes the Anthropic API key to the browser. For public-facing deployments, proxy API calls through a backend service so the key stays server-side.
-- If you are using this tool with sensitive or regulated data, make sure your deployment environment meets the applicable compliance requirements.
-
-## Project Structure
-
-```
-bias-testing-app/
-├── .env.example           # Template for environment variables
-├── .gitignore             # Excludes node_modules, .env, build output
-├── .eslintrc.cjs          # ESLint configuration
-├── LICENSE                # MIT license
-├── README.md              # This file
-├── index.html             # Vite entry HTML
-├── package.json           # Dependencies and scripts
-├── postcss.config.js      # PostCSS config for Tailwind
-├── tailwind.config.js     # Tailwind CSS config
-├── vite.config.js         # Vite build config
-└── src/
-    ├── App.jsx            # Main component
-    ├── main.jsx           # React entry point
-    └── index.css          # Global styles and Tailwind directives
-```
+- NIST AI Risk Management Framework 1.0 (AI 100-1), Measure function
+- NIST SP 1270, Towards a Standard for Identifying and Managing Bias in Artificial Intelligence
+- EEOC Uniform Guidelines on Employee Selection Procedures, 29 CFR 1607.4
+- EEOC Technical Assistance on AI and Title VII
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome. Feel free to open a pull request or file an issue.
+Issues and pull requests are welcome. The standalone tool is one HTML file with no build tooling, so a change there is a direct edit to `index.html`. Changes to the calculation or the summary wording should be made in both `index.html` and `BiasTestingTool.jsx` so the two builds stay in step.
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+See `LICENSE`.
