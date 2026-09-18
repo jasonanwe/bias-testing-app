@@ -36,7 +36,7 @@ const STEPS = ["System Info", "Comparisons", "Metrics", "Statistics", "Context",
 
 const STEP_INFO = [
   ["System Info", "The system name, owner, register ID, test date, and whether this is pre-deployment, recurring, or incident-triggered."],
-  ["Comparisons", "Each pair of groups you are comparing, defined by protected class, with the favourable and unfavourable outcome counts for each. Add as many comparisons as the use case needs. Gather these before you start."],
+  ["Comparisons", "Each pair of groups you are comparing, defined by protected class, with the favorable and unfavorable outcome counts for each. Add as many comparisons as the use case needs. Gather these before you start."],
   ["Metrics", "Calculated for you. Selection rates and the disparate impact ratio for every comparison, against the four-fifths rule."],
   ["Statistics", "Calculated for you. Fisher's Exact, chi-square, and two-proportion z-test run on each comparison, plus a multiplicity-adjusted p-value shown for context."],
   ["Context", "Four questions about the decision: its type, who it affects, how many decisions per year, and how reversible it is. Answered once for the system."],
@@ -161,6 +161,79 @@ function holmAdjust(ps) {
 
 /* ---------------- per-comparison computation ---------------- */
 
+/* ---------- CSV import helpers ----------
+   Parsing and counting happen here, in the browser. No network call, no
+   model, no API key. The same file always produces the same counts. */
+
+function detectDelimiter(firstLine) {
+  const c = (firstLine.match(/,/g) || []).length;
+  const t = (firstLine.match(/\t/g) || []).length;
+  const s = (firstLine.match(/;/g) || []).length;
+  if (t > c && t >= s) return "\t";
+  if (s > c && s > t) return ";";
+  return ",";
+}
+
+function parseDelimited(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const nl = text.indexOf("\n");
+  const D = detectDelimiter(nl === -1 ? text : text.slice(0, nl));
+  const rows = [];
+  let row = [], field = "", i = 0, inQ = false;
+  while (i < text.length) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
+        inQ = false; i++; continue;
+      }
+      field += ch; i++; continue;
+    }
+    if (ch === '"') { inQ = true; i++; continue; }
+    if (ch === D) { row.push(field); field = ""; i++; continue; }
+    if (ch === "\r") { i++; continue; }
+    if (ch === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+    field += ch; i++;
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length && !(r.length === 1 && r[0].trim() === ""));
+}
+
+function guessCol(headers, words) {
+  for (let i = 0; i < headers.length; i++) {
+    const h = headers[i].toLowerCase();
+    for (const w of words) if (h.indexOf(w) !== -1) return i;
+  }
+  return null;
+}
+
+function distinctValues(rows, colIdx) {
+  const m = new Map();
+  rows.forEach(r => {
+    const v = (r[colIdx] == null ? "" : String(r[colIdx])).trim();
+    if (v) m.set(v, (m.get(v) || 0) + 1);
+  });
+  return Array.from(m.entries()).sort((a, b) => b[1] - a[1]);
+}
+
+function crossTab(rows, classCol, outcomeCol, fav) {
+  const tab = new Map();
+  let used = 0, skipped = 0;
+  rows.forEach(r => {
+    const cls = (r[classCol] == null ? "" : String(r[classCol])).trim();
+    const out = (r[outcomeCol] == null ? "" : String(r[outcomeCol])).trim();
+    if (!cls || !out) { skipped++; return; }
+    if (!tab.has(cls)) tab.set(cls, { pos: 0, neg: 0 });
+    const t = tab.get(cls);
+    if (fav.indexOf(out) !== -1) t.pos++; else t.neg++;
+    used++;
+  });
+  return { tab, used, skipped };
+}
+
+const CLASS_HINTS = ["race", "ethnic", "sex", "gender", "group", "class", "language", "county", "disab", "age"];
+const OUTCOME_HINTS = ["outcome", "status", "decision", "result", "disposition", "approved", "determination"];
+
 function newComparison() {
   return { label: "", aName: "Group A", bName: "Group B", aPos: "", aNeg: "", bPos: "", bNeg: "" };
 }
@@ -233,9 +306,9 @@ function buildNarrative(d) {
 
   const per100 = Math.round(driving.di * 100);
   let gap = (m === 1 ? "" : "The comparison driving the result is " + driving.name + ". ") +
-    driving.lowG + " received favourable outcomes at " + pct(driving.lowR) + " against " +
+    driving.lowG + " received favorable outcomes at " + pct(driving.lowR) + " against " +
     pct(driving.hiR) + " for " + driving.hiG + ". The disparate impact ratio is " + driving.di.toFixed(3) +
-    ", which means that for every 100 " + driving.hiG + " receiving a favourable outcome at their group's rate, roughly " +
+    ", which means that for every 100 " + driving.hiG + " receiving a favorable outcome at their group's rate, roughly " +
     per100 + " " + driving.lowG + " did. ";
   if (driving.di >= 0.90) gap += "That sits above 0.90 and shows no meaningful separation between the two groups under the four-fifths rule.";
   else if (driving.di >= 0.80) gap += "That clears the 0.80 four-fifths threshold, though the margin is narrow enough to watch across future cycles.";
@@ -320,6 +393,8 @@ export default function BiasTestingTool() {
   const [testDate, setTestDate] = useState(new Date().toISOString().slice(0, 10));
   const [testType, setTestType] = useState("Pre-Deployment");
   const [comparisons, setComparisons] = useState([newComparison()]);
+  const [impOpen, setImpOpen] = useState(false);
+  const [imp, setImp] = useState({ fileName: "", headers: [], rows: [], classCol: null, outcomeCol: null, fav: [], ref: null, error: "" });
   const [context, setContext] = useState({ decisionType: 0, affectedPop: 0, scale: 0, reversibility: 0 });
 
   const setComp = (i, field, value) => {
@@ -327,6 +402,68 @@ export default function BiasTestingTool() {
   };
   const addComparison = () => setComparisons(prev => [...prev, newComparison()]);
   const removeComparison = (i) => setComparisons(prev => prev.length > 1 ? prev.filter((c, k) => k !== i) : prev);
+
+  const resetImp = () => setImp({ fileName: "", headers: [], rows: [], classCol: null, outcomeCol: null, fav: [], ref: null, error: "" });
+  const toggleImp = () => { if (impOpen) resetImp(); setImpOpen(v => !v); };
+
+  const onFilePick = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const fr = new FileReader();
+    fr.onerror = () => setImp(p => ({ ...p, error: "That file could not be read." }));
+    fr.onload = () => {
+      try {
+        const rows = parseDelimited(String(fr.result));
+        if (rows.length < 2) {
+          setImp(p => ({ ...p, error: "The file needs a header row and at least one row of data." }));
+          return;
+        }
+        const headers = rows[0].map(h => String(h).trim());
+        setImp({
+          fileName: f.name, headers, rows: rows.slice(1),
+          classCol: guessCol(headers, CLASS_HINTS),
+          outcomeCol: guessCol(headers, OUTCOME_HINTS),
+          fav: [], ref: null, error: "",
+        });
+      } catch (err) {
+        setImp(p => ({ ...p, error: "Could not read that file. " + err.message }));
+      }
+    };
+    fr.readAsText(f);
+  };
+
+  const setImpCol = (which, val) => {
+    const v = val === "" ? null : parseInt(val, 10);
+    setImp(p => which === "class" ? { ...p, classCol: v, ref: null } : { ...p, outcomeCol: v, fav: [] });
+  };
+  const toggleFav = (v) => setImp(p => ({
+    ...p, fav: p.fav.indexOf(v) === -1 ? [...p.fav, v] : p.fav.filter(x => x !== v),
+  }));
+  const setImpRef = (v) => setImp(p => ({ ...p, ref: v === "" ? null : v }));
+
+  const impReady = imp.headers.length > 0 && imp.classCol != null && imp.outcomeCol != null &&
+                   imp.fav.length > 0 && imp.ref != null && imp.classCol !== imp.outcomeCol;
+
+  const applyImport = (replace) => {
+    const { tab } = crossTab(imp.rows, imp.classCol, imp.outcomeCol, imp.fav);
+    if (!tab.has(imp.ref)) return;
+    const refT = tab.get(imp.ref);
+    const made = [];
+    Array.from(tab.keys()).forEach(k => {
+      if (k === imp.ref) return;
+      const t = tab.get(k);
+      made.push({
+        label: imp.headers[imp.classCol] + ": " + k + " vs " + imp.ref,
+        aName: k, bName: imp.ref,
+        aPos: String(t.pos), aNeg: String(t.neg),
+        bPos: String(refT.pos), bNeg: String(refT.neg),
+      });
+    });
+    if (made.length === 0) return;
+    setComparisons(prev => replace ? made : prev.filter(c => compStats(c).ready).concat(made));
+    setImpOpen(false);
+    resetImp();
+  };
 
   const stats = useMemo(() => comparisons.map(compStats), [comparisons]);
   const readyStats = stats.filter(s => s.ready);
@@ -409,6 +546,129 @@ export default function BiasTestingTool() {
   const selectStyle = "w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400";
   const labelStyle = "block text-sm font-medium text-gray-700 mb-1";
 
+  const ImportPanel = () => {
+    const outVals = imp.outcomeCol != null ? distinctValues(imp.rows, imp.outcomeCol) : [];
+    const clsVals = imp.classCol != null ? distinctValues(imp.rows, imp.classCol) : [];
+    const sameCol = imp.classCol != null && imp.outcomeCol != null && imp.classCol === imp.outcomeCol;
+    let ct = null, refT = null;
+    if (impReady) {
+      ct = crossTab(imp.rows, imp.classCol, imp.outcomeCol, imp.fav);
+      refT = ct.tab.get(imp.ref);
+    }
+    return (
+      <div className="rounded-xl border border-blue-200 bg-blue-50/30 p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-blue-700">Import outcome data</span>
+          <button onClick={toggleImp} className="text-xs text-gray-400 hover:text-gray-700 px-2 py-0.5 rounded">Close</button>
+        </div>
+        <p className="text-xs text-gray-500">Everything is read and counted in this browser. The file is not uploaded anywhere and nothing is transmitted.</p>
+
+        <div className="rounded-lg border border-blue-100 bg-white p-3 text-xs text-gray-700">
+          <div className="font-semibold text-blue-700 mb-1">What the file needs</div>
+          <ul className="list-disc pl-5 space-y-0.5 leading-snug">
+            <li>One row per decision, not pre-totalled counts. The tool does the counting.</li>
+            <li>A header row first, with column names.</li>
+            <li>One column identifying the protected class, and one holding the outcome. Any other columns are ignored.</li>
+            <li>A small set of values in the outcome column, such as Approved and Denied, rather than free text.</li>
+            <li>Consistent spelling. Black and black count as two separate groups, and so do Approved and approved.</li>
+            <li>Only the columns you need. Leave out names, identifiers, dates of birth, and addresses.</li>
+          </ul>
+          <div className="mt-2 pt-2 border-t border-gray-100 text-gray-500">CSV, tab, or semicolon delimited. Rows with a blank class or outcome are skipped and reported. If a case can appear more than once, remove duplicates before exporting.</div>
+        </div>
+
+        <input type="file" accept=".csv,.tsv,.txt,text/csv" onChange={onFilePick} className="block text-sm" />
+
+        {imp.error && <p className="rounded-lg border border-red-300 bg-red-50 p-2 text-xs text-red-800">{imp.error}</p>}
+
+        {imp.headers.length > 0 && (<>
+          <p className="rounded-lg border border-green-200 bg-green-50 p-2 text-xs text-green-800">
+            Read {imp.rows.length} row{imp.rows.length === 1 ? "" : "s"} and {imp.headers.length} columns from {imp.fileName}.
+          </p>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={labelStyle}>Protected class column</label>
+              <select className={selectStyle} value={imp.classCol == null ? "" : imp.classCol} onChange={e => setImpCol("class", e.target.value)}>
+                <option value="">Choose a column</option>
+                {imp.headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+              </select></div>
+            <div><label className={labelStyle}>Outcome column</label>
+              <select className={selectStyle} value={imp.outcomeCol == null ? "" : imp.outcomeCol} onChange={e => setImpCol("outcome", e.target.value)}>
+                <option value="">Choose a column</option>
+                {imp.headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+              </select></div>
+          </div>
+
+          {sameCol && <p className="rounded-lg border border-red-300 bg-red-50 p-2 text-xs text-red-800">The protected class and outcome columns must be different.</p>}
+
+          {!sameCol && imp.outcomeCol != null && (outVals.length > 25
+            ? <p className="rounded-lg border border-red-300 bg-red-50 p-2 text-xs text-red-800">That column has {outVals.length} distinct values, which is unlikely to be an outcome. Pick a column with a small set of values.</p>
+            : <div>
+                <label className={labelStyle}>Which values count as a favorable outcome?</label>
+                <div className="flex flex-wrap gap-2">
+                  {outVals.map(v => {
+                    const on = imp.fav.indexOf(v[0]) !== -1;
+                    return <button key={v[0]} onClick={() => toggleFav(v[0])}
+                      className={"rounded-full border px-3 py-1 text-xs transition-all " + (on ? "border-green-600 bg-green-50 text-green-800 font-semibold" : "border-gray-300 bg-white text-gray-700 hover:border-gray-400")}>
+                      {v[0]} <span className={on ? "text-green-600" : "text-gray-400"}>{v[1]}</span>
+                    </button>;
+                  })}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Anything not selected is treated as unfavorable.</p>
+              </div>)}
+
+          {!sameCol && imp.classCol != null && (clsVals.length > 40
+            ? <p className="rounded-lg border border-red-300 bg-red-50 p-2 text-xs text-red-800">That column has {clsVals.length} distinct values, which is unlikely to be a protected class. Pick a column with fewer groups.</p>
+            : <div><label className={labelStyle}>Reference group</label>
+                <select className={selectStyle} value={imp.ref == null ? "" : imp.ref} onChange={e => setImpRef(e.target.value)}>
+                  <option value="">Choose the group to compare against</option>
+                  {clsVals.map(v => <option key={v[0]} value={v[0]}>{v[0]} ({v[1]} rows)</option>)}
+                </select>
+                <p className="text-xs text-gray-500 mt-1">Every other group is compared against this one. Normally the largest group, or the one that has historically received the more favorable outcome.</p>
+              </div>)}
+
+          {impReady && (
+            <div className="border-t border-blue-100 pt-3">
+              <div className="text-xs font-semibold text-blue-700 mb-1">Preview</div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs border-collapse">
+                  <thead><tr className="bg-gray-100 text-gray-700">
+                    <th className="px-2 py-1 text-left font-medium">Comparison</th>
+                    <th className="px-2 py-1 text-left font-medium">Group pos / neg</th>
+                    <th className="px-2 py-1 text-left font-medium">Reference pos / neg</th>
+                    <th className="px-2 py-1 text-left font-medium">DI ratio</th>
+                    <th className="px-2 py-1"></th>
+                  </tr></thead>
+                  <tbody>
+                    {Array.from(ct.tab.keys()).filter(k => k !== imp.ref).map(k => {
+                      const t = ct.tab.get(k);
+                      const n1 = t.pos + t.neg, n2 = refT.pos + refT.neg;
+                      const rA = n1 > 0 ? t.pos / n1 : 0, rB = n2 > 0 ? refT.pos / n2 : 0;
+                      const di = rB > 0 ? (rA < rB ? rA / rB : rB / rA) : 0;
+                      return <tr key={k} className="border-t border-gray-100">
+                        <td className="px-2 py-1">{k} vs {imp.ref}</td>
+                        <td className="px-2 py-1 font-mono">{t.pos} / {t.neg}</td>
+                        <td className="px-2 py-1 font-mono">{refT.pos} / {refT.neg}</td>
+                        <td className="px-2 py-1 font-mono">{di.toFixed(3)}</td>
+                        <td className="px-2 py-1 text-amber-700">{n1 < 30 ? "under 30" : ""}</td>
+                      </tr>;
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {ct.used} row{ct.used === 1 ? "" : "s"} counted.{ct.skipped > 0 ? " " + ct.skipped + " row" + (ct.skipped === 1 ? "" : "s") + " skipped for a blank class or outcome value." : ""} {ct.used + ct.skipped} rows read in total.
+              </p>
+              <div className="flex gap-3 mt-2">
+                <button onClick={() => applyImport(true)} className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">Replace comparisons</button>
+                <button onClick={() => applyImport(false)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">Add to existing</button>
+              </div>
+            </div>
+          )}
+        </>)}
+      </div>
+    );
+  };
+
   const previewBanner = (
     <div className="rounded-lg border border-amber-400 border-l-4 bg-amber-50 p-3 text-sm text-amber-900">
       <span className="block font-semibold mb-0.5">Preview only {DASH} these are not your results.</span>
@@ -477,7 +737,8 @@ export default function BiasTestingTool() {
       </div>);
 
       case 1: return (<div className="space-y-4">
-        <p className="text-sm text-gray-600">Each comparison is one pair of groups tested on one outcome. Groups should be defined by protected class (e.g., race, ethnicity, sex, age, disability status) per applicable civil rights requirements. Add a comparison for each pair the use case requires.</p>
+        <p className="text-sm text-gray-600">Each comparison is one pair of groups tested on one outcome. Groups should be defined by protected class (e.g., race, ethnicity, sex, age, disability status) per applicable civil rights requirements. Enter them by hand, or import a file of outcome data and let the tool build them for you.</p>
+        {impOpen && <ImportPanel />}
         {comparisons.map((c, i) => {
           const s = stats[i];
           return (
@@ -521,7 +782,10 @@ export default function BiasTestingTool() {
             </div>
           );
         })}
-        <button onClick={addComparison} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">+ Add comparison</button>
+        <div className="flex gap-3 flex-wrap">
+          {!impOpen && <button onClick={toggleImp} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">Import from a file</button>}
+          <button onClick={addComparison} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">+ Add comparison</button>
+        </div>
         {comparisons.length > 1 && <p className="text-xs text-gray-500">Running several comparisons raises the chance that one crosses the significance threshold by chance. The Statistics step reports a multiplicity-adjusted p-value alongside the raw one for that reason.</p>}
       </div>);
 
@@ -730,7 +994,7 @@ export default function BiasTestingTool() {
             <button onClick={handleSavePdf} className="px-4 py-2 rounded-lg bg-gray-800 text-white text-sm font-medium hover:bg-gray-700 transition-colors">Save as PDF</button>
             <button onClick={() => setStep(0)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">Start new test</button>
           </div>
-          <p className="text-xs text-gray-500 text-center">Your browser&rsquo;s print dialog will open. Choose <span className="font-medium">Save as PDF</span> as the destination, and keep background graphics enabled so the classification colour is retained.</p>
+          <p className="text-xs text-gray-500 text-center">Your browser&rsquo;s print dialog will open. Choose <span className="font-medium">Save as PDF</span> as the destination, and keep background graphics enabled so the classification color is retained.</p>
         </div>);
       }
 

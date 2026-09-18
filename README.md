@@ -6,21 +6,40 @@ It walks through seven steps: system details, group data, metrics, statistical s
 
 ## Builds
 
-1. `index.html` is the standalone build: one file, no dependencies, no build step. Download it and open it in any modern browser, host it on GitHub Pages, or run it from `file://` on a machine with no network connection.
+1. **`index.html`**, the standalone build. One file, no dependencies, no build step. Download it and open it in any modern browser, host it on GitHub Pages, or run it from `file://` on a machine with no network connection.
 
-2. `BiasTestingTool.jsx` is the same tool as a React component, for dropping into an existing app. It exports a default component with no required props and expects React 18 or later and Tailwind CSS for styling.
+2. **`BiasTestingTool.jsx`**, the same tool as a React component, for dropping into an existing app. It exports a default component with no required props and expects React 18 or later and Tailwind CSS for styling.
 
 Both produce identical results. The standalone build is the one to use if you just want to run a test.
 
 ## What it does
 
-You enter one or more comparisons. Each is a pair of groups defined by a protected class, with their favourable and unfavourable outcome counts. Most real testing needs several: race, ethnicity, sex, age, and disability are separate comparisons, and the tool handles them in a single session with one report at the end.
+You work with one or more comparisons. Each is a pair of groups defined by a protected class, with their favorable and unfavorable outcome counts. Most real testing needs several: race, ethnicity, sex, age, and disability are separate comparisons, and the tool handles them in a single session with one report at the end. Enter the counts by hand, or import a file of outcome data and let the tool build the comparisons for you.
 
 For each comparison the tool calculates the selection rate per group and the disparate impact ratio, evaluated against the four-fifths rule from the Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4).
 
 It runs three tests of statistical significance and uses the strongest applicable result: Fisher's Exact Test, which is valid at any sample size, the Chi-Square Test of Independence, which requires expected cell counts of five or more, and the Two-Proportion Z-Test, which requires at least 30 observations per group. Tests that are not valid for your data are marked as such rather than reported.
 
 Four context questions then adjust the finding: the type of decision, who it affects, how many decisions are made per year, and how reversible the outcome is. A decision that directly determines outcomes for vulnerable populations at scale carries more weight than an informational output affecting internal staff.
+
+## Importing outcome data
+
+Counting outcomes by group across several comparisons is the tedious part, so the tool will do it from a file.
+
+Upload a CSV, TSV, or semicolon-delimited export with one row per decision. The tool reads it, reports how many rows and columns it found, and guesses which column holds the protected class and which holds the outcome. Both are dropdowns, so a wrong guess costs one click. It then lists every distinct value in the outcome column with a count, and you mark the ones that represent a favorable outcome. Pick a reference group and it builds one comparison per remaining group against it, with a preview of the counts and ratios before anything is created.
+
+The counting is deterministic and runs in the browser. There is no model and no API call, so the same file always produces the same numbers, which is what a governance record needs. The preview also reports rows counted, rows skipped for a blank class or outcome value, and total rows read, so the totals can be reconciled against the source file.
+
+What the file needs:
+
+1. One row per decision, not pre-totalled counts.
+2. A header row first, with column names.
+3. One column identifying the protected class, and one holding the outcome. Any other columns are ignored.
+4. A small set of values in the outcome column, such as Approved and Denied, rather than free text.
+5. Consistent spelling. Black and black count as two separate groups, and so do Approved and approved.
+6. Only the columns you need. Leave out names, identifiers, dates of birth, and addresses, since the tool reads two columns and nothing else.
+
+Quoted fields containing commas are handled, as are files carrying a byte order mark, which is what Excel produces when saving as CSV UTF-8. If a case can appear more than once, remove duplicates before exporting.
 
 ## How the classification works
 
@@ -49,19 +68,19 @@ Alongside the numbers, the tool writes a short narrative explaining what the res
 
 ## Privacy
 
-Every calculation happens in your browser, including the plain-language summary. The tool makes no network requests, stores nothing, and has no analytics, no cookies, and no external dependencies. Fonts are drawn from the system stack rather than a font CDN, so nothing is fetched at load time. Data you enter exists only in the page and disappears when you close the tab.
+Every calculation happens in your browser, including the plain-language summary and any file you import. The tool makes no network requests, stores nothing, and has no analytics, no cookies, and no external dependencies. Fonts are drawn from the system stack rather than a font CDN, so nothing is fetched at load time. Data you enter exists only in the page and disappears when you close the tab.
 
 This matters if you are testing systems that touch sensitive data, because the counts never leave the machine.
 
 ## Saving the report
 
-The report step opens your browser's print dialog. Choose "Save as PDF" as the destination and keep background graphics enabled so the classification colour is preserved in the saved file.
+The report step opens your browser's print dialog. Choose "Save as PDF" as the destination and keep background graphics enabled so the classification color is preserved in the saved file.
 
 ## Limitations
 
 This tool is a screening instrument. The four-fifths rule is a threshold for further investigation, not a definitive legal standard, and a passing ratio does not establish that a system is free of bias.
 
-Each comparison is two groups on a single binary outcome. An outcome that is not a simple favourable or unfavourable split needs to be reduced to one before it can be tested.
+Each comparison is two groups on a single binary outcome. An outcome that is not a simple favorable or unfavorable split needs to be reduced to one before it can be tested.
 
 Statistical tests have limited power at small sample sizes. When a group has fewer than 30 observations, treat the result as directional and gather more data before drawing conclusions.
 
@@ -76,7 +95,7 @@ Nothing here is legal advice. Disparate impact analysis sits in a contested area
 
 ## Contributing
 
-Issues and pull requests are welcome. The standalone tool is one HTML file with no build tooling, so a change there is a direct edit to `index.html`. Changes to the calculation or the summary wording should be made in both `index.html` and `BiasTestingTool.jsx` so the two builds stay in step.
+Issues and pull requests are welcome. The standalone tool is one HTML file with no build tooling, so a change there is a direct edit to `index.html`. Changes to the calculation, the import, or the summary wording should be made in both `index.html` and `BiasTestingTool.jsx` so the two builds stay in step.
 
 ## License
 

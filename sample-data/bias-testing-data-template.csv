@@ -1,0 +1,9 @@
+case_id,protected_class,outcome
+1001,White,Approved
+1002,Black,Approved
+1003,Black,Denied
+1004,Hispanic,Approved
+1005,White,Denied
+1006,White,Approved
+1007,Hispanic,Denied
+1008,Black,Approved

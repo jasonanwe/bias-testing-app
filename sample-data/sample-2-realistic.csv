@@ -1,0 +1,641 @@
+case_id,race_ethnicity,sex,age_band,primary_language,county_type,program,outcome_status,decision_date
+2001,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2002,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2003,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2004,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2005,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2006,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2007,Asian,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2008,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2009,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2010,White,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2011,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2012,White,Female,18 to 64,Other than English,Rural,Benefits Eligibility,Approved,2026-03-15
+2013,White,Female,65 and over,Spanish,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2014,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2015,White,Female,Under 18,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2016,White,Female,65 and over,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2017,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2018,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2019,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2020,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2021,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2022,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2023,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2024,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2025,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2026,White,Female,18 to 64,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2027,White,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2028,Hispanic,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2029,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2030,Two or more races,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2031,Two or more races,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2032,White,Male,18 to 64,Other than English,Urban,Benefits Eligibility,Approved,2026-03-15
+2033,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2034,White,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2035,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2036,White,Male,Under 18,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2037,White,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2038,White,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2039,Black,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2040,White,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2041,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2042,Hispanic,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2043,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2044,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2045,White,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2046,Asian,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2047,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2048,Hispanic,Male,Under 18,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2049,Hispanic,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2050,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2051,Hispanic,Female,Under 18,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2052,Two or more races,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2053,Asian,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2054,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2055,White,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2056,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2057,Black,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2058,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2059,Asian,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2060,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2061,White,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2062,White,Female,18 to 64,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2063,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2064,Hispanic,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2065,White,Female,18 to 64,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2066,White,Female,18 to 64,Other than English,Urban,Benefits Eligibility,Approved,2026-03-15
+2067,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2068,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2069,Hispanic,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2070,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2071,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2072,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2073,White,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2074,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2075,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2076,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2077,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2078,White,Male,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2079,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2080,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2081,American Indian or Alaska Native,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2082,Asian,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2083,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2084,Black,Female,65 and over,Other than English,Urban,Benefits Eligibility,Approved,2026-03-15
+2085,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2086,Black,Male,Under 18,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2087,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2088,White,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2089,Black,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2090,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2091,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2092,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2093,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2094,White,Male,Under 18,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2095,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2096,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2097,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2098,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2099,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2100,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2101,Two or more races,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2102,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2103,Asian,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2104,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2105,Hispanic,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2106,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2107,Black,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2108,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2109,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2110,Hispanic,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2111,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2112,Black,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2113,Asian,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2114,White,Female,Under 18,Other than English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2115,Two or more races,Male,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2116,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2117,White,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2118,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2119,White,Female,18 to 64,Other than English,Urban,Benefits Eligibility,Approved,2026-03-15
+2120,American Indian or Alaska Native,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2121,Black,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2122,White,Male,18 to 64,Other than English,Rural,Benefits Eligibility,Approved,2026-03-15
+2123,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2124,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2125,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2126,Asian,Female,65 and over,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2127,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2128,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2129,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2130,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2131,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2132,White,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2133,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2134,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2135,Hispanic,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2136,Hispanic,Female,Under 18,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2137,Black,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2138,Black,Male,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2139,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2140,Hispanic,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2141,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2142,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2143,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2144,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2145,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2146,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2147,Black,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2148,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2149,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2150,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2151,Hispanic,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2152,Two or more races,Female,65 and over,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2153,Two or more races,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2154,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2155,White,Female,Under 18,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2156,White,Female,65 and over,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2157,White,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2158,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2159,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2160,Two or more races,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2161,White,Male,18 to 64,Other than English,Urban,Benefits Eligibility,Approved,2026-03-15
+2162,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2163,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2164,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2165,White,Male,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2166,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2167,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2168,Black,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2169,Asian,Female,65 and over,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2170,Two or more races,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2171,Asian,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2172,Black,Male,18 to 64,Other than English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2173,White,Female,18 to 64,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2174,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2175,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2176,Asian,Female,65 and over,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2177,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2178,White,Male,65 and over,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2179,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2180,White,Male,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2181,Hispanic,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2182,Asian,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2183,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2184,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2185,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2186,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2187,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2188,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2189,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2190,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2191,Hispanic,Male,Under 18,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2192,Asian,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2193,White,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2194,Asian,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2195,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2196,White,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2197,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2198,Black,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2199,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2200,Black,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2201,White,Female,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2202,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2203,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2204,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2205,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2206,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2207,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2208,Black,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2209,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2210,White,Male,65 and over,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2211,Hispanic,Male,65 and over,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2212,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2213,Asian,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2214,White,Male,65 and over,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2215,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2216,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2217,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2218,Hispanic,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2219,White,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2220,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2221,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2222,Asian,Female,18 to 64,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2223,White,Female,Under 18,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2224,White,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2225,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2226,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2227,Black,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2228,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2229,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2230,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2231,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2232,Black,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2233,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2234,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2235,Black,Male,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2236,White,Female,Under 18,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2237,White,Female,65 and over,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2238,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2239,Asian,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2240,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2241,White,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2242,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2243,American Indian or Alaska Native,Female,65 and over,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2244,White,Male,18 to 64,Other than English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2245,Hispanic,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2246,White,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2247,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2248,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2249,White,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2250,Hispanic,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2251,Hispanic,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2252,Hispanic,Male,65 and over,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2253,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2254,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2255,American Indian or Alaska Native,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2256,Two or more races,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2257,Hispanic,Male,18 to 64,Other than English,Urban,Benefits Eligibility,Denied,2026-03-15
+2258,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2259,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2260,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2261,Asian,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2262,White,Male,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2263,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2264,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2265,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2266,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2267,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2268,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2269,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2270,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2271,Two or more races,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2272,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2273,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2274,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2275,Black,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2276,Asian,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2277,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2278,White,Male,18 to 64,Other than English,Rural,Benefits Eligibility,Approved,2026-03-15
+2279,White,Male,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2280,White,Male,65 and over,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2281,Black,Female,18 to 64,Other than English,Rural,Benefits Eligibility,Denied,2026-03-15
+2282,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2283,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2284,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2285,Asian,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2286,White,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2287,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2288,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2289,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2290,Asian,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2291,American Indian or Alaska Native,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2292,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2293,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2294,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2295,Black,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2296,White,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2297,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2298,Black,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2299,Asian,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2300,Asian,Male,Under 18,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2301,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2302,White,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2303,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2304,Hispanic,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2305,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2306,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2307,Black,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2308,Asian,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2309,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2310,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2311,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2312,White,Male,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2313,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2314,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2315,White,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2316,Black,Male,Under 18,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2317,Asian,Female,65 and over,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2318,Hispanic,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2319,Hispanic,Male,18 to 64,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2320,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2321,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2322,White,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2323,Black,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2324,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2325,White,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2326,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2327,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2328,White,Female,Under 18,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2329,Black,Female,18 to 64,Other than English,Rural,Benefits Eligibility,Denied,2026-03-15
+2330,Hispanic,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2331,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2332,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2333,Black,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2334,White,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2335,Black,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2336,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2337,White,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2338,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2339,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2340,White,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2341,White,Female,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2342,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2343,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2344,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2345,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2346,White,Male,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2347,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2348,White,Female,18 to 64,Other than English,Urban,Benefits Eligibility,Denied,2026-03-15
+2349,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2350,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2351,White,Male,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2352,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2353,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2354,White,Male,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2355,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2356,Asian,Male,Under 18,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2357,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2358,White,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2359,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2360,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2361,Hispanic,Female,18 to 64,Other than English,Urban,Benefits Eligibility,Approved,2026-03-15
+2362,Asian,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2363,Hispanic,Male,Under 18,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2364,Black,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2365,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2366,White,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2367,White,Female,Under 18,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2368,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2369,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2370,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2371,Asian,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2372,Hispanic,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2373,White,Female,65 and over,Other than English,Urban,Benefits Eligibility,Denied,2026-03-15
+2374,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2375,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2376,Two or more races,Female,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2377,Hispanic,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2378,Black,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2379,White,Female,65 and over,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2380,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2381,Black,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2382,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2383,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2384,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2385,White,Male,Under 18,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2386,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2387,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2388,Black,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2389,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2390,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2391,Black,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2392,Hispanic,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2393,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2394,Hispanic,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2395,White,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2396,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2397,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2398,White,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2399,Hispanic,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2400,Hispanic,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2401,White,Female,18 to 64,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2402,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2403,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2404,Hispanic,Male,18 to 64,Other than English,Urban,Benefits Eligibility,Approved,2026-03-15
+2405,Hispanic,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2406,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2407,White,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2408,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2409,Black,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2410,Hispanic,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2411,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2412,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2413,Asian,Female,65 and over,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2414,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2415,White,Female,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2416,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2417,White,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2418,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2419,Black,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2420,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2421,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2422,White,Male,Under 18,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2423,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2424,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2425,American Indian or Alaska Native,Female,18 to 64,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2426,Black,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2427,White,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2428,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2429,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2430,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2431,Two or more races,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2432,Two or more races,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2433,White,Male,65 and over,Other than English,Rural,Benefits Eligibility,Approved,2026-03-15
+2434,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2435,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2436,White,Female,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2437,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2438,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2439,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2440,Black,Male,18 to 64,Other than English,Urban,Benefits Eligibility,Denied,2026-03-15
+2441,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2442,Hispanic,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2443,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2444,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2445,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2446,White,Male,65 and over,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2447,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2448,White,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2449,Two or more races,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2450,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2451,White,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2452,Hispanic,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2453,Hispanic,Male,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2454,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2455,American Indian or Alaska Native,Male,Under 18,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2456,Black,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2457,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2458,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2459,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2460,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2461,White,Female,Under 18,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2462,Black,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2463,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2464,White,Female,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2465,White,Female,65 and over,Other than English,Urban,Benefits Eligibility,Denied,2026-03-15
+2466,White,Male,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2467,White,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2468,Hispanic,Female,Under 18,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2469,Hispanic,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2470,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2471,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2472,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2473,American Indian or Alaska Native,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2474,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2475,Hispanic,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2476,Two or more races,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2477,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2478,Hispanic,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2479,Asian,Female,18 to 64,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2480,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2481,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2482,White,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2483,White,Male,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2484,Two or more races,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2485,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2486,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2487,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2488,Asian,Male,18 to 64,Other than English,Rural,Benefits Eligibility,Approved,2026-03-15
+2489,White,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2490,White,Male,18 to 64,Other than English,Urban,Benefits Eligibility,Denied,2026-03-15
+2491,White,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2492,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2493,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2494,White,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2495,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2496,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2497,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2498,Hispanic,Female,Under 18,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2499,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2500,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2501,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2502,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2503,White,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2504,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2505,Black,Female,18 to 64,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2506,White,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2507,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2508,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2509,Black,Female,65 and over,Other than English,Rural,Benefits Eligibility,Approved,2026-03-15
+2510,White,Male,18 to 64,Other than English,Rural,Benefits Eligibility,Denied,2026-03-15
+2511,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2512,White,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2513,White,Female,18 to 64,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2514,Asian,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2515,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2516,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2517,White,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2518,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2519,Hispanic,Female,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2520,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2521,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2522,White,Female,65 and over,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2523,Hispanic,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2524,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2525,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2526,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2527,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2528,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2529,Asian,Male,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2530,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2531,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2532,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2533,White,Female,Under 18,Other than English,Rural,Benefits Eligibility,Denied,2026-03-15
+2534,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2535,Asian,Male,65 and over,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2536,Black,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2537,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2538,White,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2539,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2540,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2541,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2542,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2543,White,Male,18 to 64,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2544,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2545,Asian,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2546,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2547,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2548,Black,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2549,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2550,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2551,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2552,White,Female,65 and over,Other than English,Urban,Benefits Eligibility,Denied,2026-03-15
+2553,White,Female,65 and over,Spanish,Urban,Benefits Eligibility,Approved,2026-03-15
+2554,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2555,Black,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2556,American Indian or Alaska Native,Male,18 to 64,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2557,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2558,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2559,Hispanic,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2560,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2561,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2562,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2563,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2564,American Indian or Alaska Native,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2565,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2566,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2567,Black,Male,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2568,Two or more races,Female,18 to 64,English,Rural,Benefits Eligibility,Approved with conditions,2026-03-15
+2569,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2570,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2571,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2572,Asian,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2573,Black,Male,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2574,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2575,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2576,American Indian or Alaska Native,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2577,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2578,White,Male,18 to 64,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2579,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2580,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2581,White,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2582,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2583,White,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2584,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2585,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2586,White,Female,65 and over,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2587,Black,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2588,Hispanic,Female,18 to 64,Other than English,Urban,Benefits Eligibility,Denied,2026-03-15
+2589,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2590,Asian,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2591,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2592,Hispanic,Female,65 and over,Other than English,Urban,Benefits Eligibility,Approved,2026-03-15
+2593,White,Male,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2594,Black,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2595,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2596,Black,Female,Under 18,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2597,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2598,Hispanic,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2599,Black,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2600,White,Male,Under 18,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2601,Black,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2602,Hispanic,Female,18 to 64,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2603,Two or more races,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2604,Hispanic,Male,65 and over,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2605,Black,Male,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2606,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2607,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2608,Black,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2609,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved with conditions,2026-03-15
+2610,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2611,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2612,White,Male,18 to 64,Other than English,Rural,Benefits Eligibility,Denied,2026-03-15
+2613,White,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2614,Two or more races,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2615,White,Female,65 and over,English,Urban,Benefits Eligibility,Withdrawn,2026-03-15
+2616,White,Female,65 and over,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2617,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2618,Hispanic,Male,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2619,Two or more races,Male,18 to 64,Spanish,Rural,Benefits Eligibility,Approved,2026-03-15
+2620,White,Female,Under 18,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2621,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2622,White,Male,18 to 64,English,Rural,Benefits Eligibility,Withdrawn,2026-03-15
+2623,White,Male,Under 18,Spanish,Urban,Benefits Eligibility,Denied,2026-03-15
+2624,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2625,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2626,Two or more races,Female,18 to 64,Spanish,Rural,Benefits Eligibility,Denied,2026-03-15
+2627,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2628,White,Female,65 and over,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2629,White,Female,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2630,Hispanic,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2631,Asian,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2632,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2633,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2634,White,Male,18 to 64,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2635,White,Female,18 to 64,English,Urban,Benefits Eligibility,Denied,2026-03-15
+2636,White,Male,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2637,White,Female,18 to 64,English,Rural,Benefits Eligibility,Approved,2026-03-15
+2638,White,Female,65 and over,English,Urban,Benefits Eligibility,Approved,2026-03-15
+2639,White,Female,18 to 64,English,Rural,Benefits Eligibility,Denied,2026-03-15
+2640,White,Male,65 and over,English,Rural,Benefits Eligibility,Approved,2026-03-15

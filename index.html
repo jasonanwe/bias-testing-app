@@ -213,6 +213,28 @@ td:first-child{font-weight:500;color:#374151}
 .ctx-btn:hover{border-color:#9ca3af}
 .ctx-btn.sel{border-color:#2563eb;background:#eff6ff;color:#1e40af;box-shadow:0 0 0 1px #93c5fd}
 @media(max-width:640px){.cmp-table{font-size:.75rem}.cmp-table th,.cmp-table td{padding:.35rem}}
+
+/* --- CSV import --- */
+.imp-panel{border:1px solid #bfdbfe;background:#f8fbff;border-radius:.85rem;padding:1rem;margin-bottom:1rem}
+.imp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.imp-title{font-size:.8rem;font-weight:600;color:#1d4ed8}
+.imp-file{display:block;margin:.6rem 0;font-family:inherit;font-size:.8125rem}
+.imp-error{background:#fef2f2;border:1px solid #fca5a5;border-radius:.5rem;padding:.5rem .7rem;font-size:.8rem;color:#991b1b;margin:.5rem 0}
+.imp-ok{font-size:.8rem;color:#166534;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.5rem;padding:.5rem .7rem;margin:.5rem 0}
+.imp-vals{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.3rem}
+.imp-chip{border:1px solid #d1d5db;background:#fff;border-radius:9999px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;font-family:inherit;color:#374151;transition:all .15s}
+.imp-chip:hover{border-color:#9ca3af}
+.imp-chip.on{border-color:#16a34a;background:#f0fdf4;color:#166534;font-weight:600}
+.imp-n{color:#9ca3af;font-size:.7rem;margin-left:.2rem}
+.imp-chip.on .imp-n{color:#16a34a}
+.imp-preview{margin-top:.8rem;border-top:1px solid #dbeafe;padding-top:.8rem}
+.imp-warn{color:#b45309;font-size:.72rem}
+
+.imp-req{background:#fff;border:1px solid #dbeafe;border-radius:.6rem;padding:.7rem .9rem;margin:.6rem 0;font-size:.78rem;color:#374151}
+.imp-req-t{font-weight:600;color:#1d4ed8;margin-bottom:.35rem}
+.imp-req ul{margin:0;padding-left:1.1rem;line-height:1.5}
+.imp-req li{margin-bottom:.15rem}
+.imp-req-f{margin-top:.45rem;padding-top:.45rem;border-top:1px solid #f3f4f6;color:#6b7280}
 </style>
 </head>
 <body>
@@ -235,7 +257,7 @@ td:first-child{font-weight:500;color:#374151}
 const STEPS=["System Info","Comparisons","Metrics","Statistics","Context","Classification","Report"];
 const STEP_INFO=[
  ["System Info","The system name, owner, register ID, test date, and whether this is pre-deployment, recurring, or incident-triggered."],
- ["Comparisons","Each pair of groups you are comparing, defined by protected class, with the favourable and unfavourable outcome counts for each. Add as many comparisons as the use case needs. Gather these before you start."],
+ ["Comparisons","Each pair of groups you are comparing, defined by protected class, with the favorable and unfavorable outcome counts for each. Add as many comparisons as the use case needs. Gather these before you start."],
  ["Metrics","Calculated for you. Selection rates and the disparate impact ratio for every comparison, against the four-fifths rule."],
  ["Statistics","Calculated for you. Fisher's Exact, chi-square, and two-proportion z-test run on each comparison, plus a multiplicity-adjusted p-value shown for context."],
  ["Context","Four questions about the decision: its type, who it affects, how many decisions per year, and how reversible it is. Answered once for the system."],
@@ -374,9 +396,9 @@ function buildNarrative(){
  const drv=drivingStat();
  const per100=Math.round(drv.di*100);
  let gap=(m===1?"":"The comparison driving the result is "+drv.name+". ")+
-  drv.lowG+" received favourable outcomes at "+pct(drv.lowR)+" against "+pct(drv.hiR)+" for "+drv.hiG+
+  drv.lowG+" received favorable outcomes at "+pct(drv.lowR)+" against "+pct(drv.hiR)+" for "+drv.hiG+
   ". The disparate impact ratio is "+drv.di.toFixed(3)+", which means that for every 100 "+drv.hiG+
-  " receiving a favourable outcome at their group's rate, roughly "+per100+" "+drv.lowG+" did. ";
+  " receiving a favorable outcome at their group's rate, roughly "+per100+" "+drv.lowG+" did. ";
  if(drv.di>=.9)gap+="That sits above 0.90 and shows no meaningful separation between the two groups under the four-fifths rule.";
  else if(drv.di>=.8)gap+="That clears the 0.80 four-fifths threshold, though the margin is narrow enough to watch across future cycles.";
  else gap+="That falls below the 0.80 threshold set by the four-fifths rule, placing the quantitative finding in the "+drv.q+" range and marking the disparity as one requiring explanation.";
@@ -543,7 +565,8 @@ function render(){
   bindInputs();break;
 
  case 1:{
-  let h=`<h2>Comparisons</h2><p class="desc">Each comparison is one pair of groups tested on one outcome. Groups should be defined by protected class (e.g., race, ethnicity, sex, age, disability status) per applicable civil rights requirements. Add a comparison for each pair the use case requires.</p>`;
+  let h=`<h2>Comparisons</h2><p class="desc">Each comparison is one pair of groups tested on one outcome. Groups should be defined by protected class (e.g., race, ethnicity, sex, age, disability status) per applicable civil rights requirements. Enter them by hand, or import a file of outcome data and let the tool build them for you.</p>`;
+  if(imp.open) h+=renderImport();
   state.comparisons.forEach((c,i)=>{
    const s=compStats(c);
    h+=`<div class="cmp-card"><div class="cmp-head"><span class="cmp-n">Comparison ${i+1}</span>${state.comparisons.length>1?`<button class="cmp-remove" onclick="removeComparison(${i})">Remove</button>`:""}</div>
@@ -554,7 +577,7 @@ function render(){
 <tr><td class="rowlab">${esc(c.bName)}</td><td><input type="number" min="0" id="c${i}-bPos" value="${esc(c.bPos)}" placeholder="0"></td><td><input type="number" min="0" id="c${i}-bNeg" value="${esc(c.bNeg)}" placeholder="0"></td><td class="mono" id="c${i}-t2">${s.n2}</td></tr>
 </tbody></table><p class="hint" id="c${i}-hint">${s.ready?("Total observations: "+(s.n1+s.n2)+"."+(s.small?" One or both groups have fewer than 30 observations, so Fisher's Exact Test will carry this comparison.":"")):""}</p></div>`;
   });
-  h+=`<button class="btn btn-secondary" onclick="addComparison()">+ Add comparison</button>`;
+  h+=`<div class="btn-group">${imp.open?"":renderImport()}<button class="btn btn-secondary" onclick="addComparison()">+ Add comparison</button></div>`;
   if(state.comparisons.length>1)h+=`<p class="hint">Running several comparisons raises the chance that one crosses the significance threshold by chance. The Statistics step reports a multiplicity-adjusted p-value alongside the raw one for that reason.</p>`;
   el.innerHTML=h;bindInputs();break;}
 
@@ -642,7 +665,7 @@ function render(){
 <div class="report-section report-methodology"><div>Methodology: Disparate Impact Ratio per Uniform Guidelines on Employee Selection Procedures (29 CFR 1607.4). Statistical significance via Fisher's Exact Test, Chi-Square Test of Independence, and Two-Proportion Z-Test, with the strongest applicable result used. Holm-Bonferroni adjustment reported for multiple comparisons and advisory only. Context assessment per NIST AI Risk Management Framework 1.0 (AI 100-1) Measure function.</div><div style="margin-top:4px">References: NIST AI RMF 1.0, NIST SP 1270, EEOC Technical Assistance on AI and Title VII (May 2023).</div></div>
 </div>
 <div class="btn-group"><button class="btn btn-dark" onclick="printReport()">Save as PDF</button><button class="btn btn-secondary" onclick="goStep(0)">Start new test</button></div>
-<p class="hint" style="text-align:center">Your browser\u2019s print dialog will open. Choose <strong>Save as PDF</strong> as the destination, and keep background graphics enabled so the classification colour is retained.</p>`;
+<p class="hint" style="text-align:center">Your browser\u2019s print dialog will open. Choose <strong>Save as PDF</strong> as the destination, and keep background graphics enabled so the classification color is retained.</p>`;
   el.innerHTML=h;break;}
  }
 }
@@ -654,8 +677,215 @@ function printReport(){
  w.document.close();w.print();
 }
 
-render();
+/* ---------- CSV import and cross-tabulation ----------
+   All parsing and counting happens in this file, in the browser.
+   No network call, no model, no API key. The same file always
+   produces the same counts, and the row accounting is shown so a
+   reviewer can reconcile the totals against the source. */
 
+let imp = {open:false, fileName:"", headers:[], rows:[], classCol:null, outcomeCol:null,
+           fav:[], ref:null, error:"", skipped:0};
+
+function resetImport(){
+ imp = {open:imp.open, fileName:"", headers:[], rows:[], classCol:null, outcomeCol:null,
+        fav:[], ref:null, error:"", skipped:0};
+}
+function toggleImport(){ imp.open=!imp.open; if(!imp.open) resetImport(); render(); }
+
+function detectDelimiter(firstLine){
+ const c=(firstLine.match(/,/g)||[]).length;
+ const t=(firstLine.match(/\t/g)||[]).length;
+ const s=(firstLine.match(/;/g)||[]).length;
+ if(t>c&&t>=s) return "\t";
+ if(s>c&&s>t) return ";";
+ return ",";
+}
+
+function parseDelimited(text){
+ if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+ const nl=text.indexOf("\n");
+ const D=detectDelimiter(nl===-1?text:text.slice(0,nl));
+ const rows=[]; let row=[], field="", i=0, inQ=false;
+ while(i<text.length){
+  const ch=text[i];
+  if(inQ){
+   if(ch==='"'){
+    if(text[i+1]==='"'){field+='"';i+=2;continue;}
+    inQ=false;i++;continue;
+   }
+   field+=ch;i++;continue;
+  }
+  if(ch==='"'){inQ=true;i++;continue;}
+  if(ch===D){row.push(field);field="";i++;continue;}
+  if(ch==="\r"){i++;continue;}
+  if(ch==="\n"){row.push(field);rows.push(row);row=[];field="";i++;continue;}
+  field+=ch;i++;
+ }
+ if(field.length||row.length){row.push(field);rows.push(row);}
+ return rows.filter(r=>r.length && !(r.length===1 && r[0].trim()===""));
+}
+
+function onFilePick(input){
+ const f=input.files&&input.files[0];
+ if(!f) return;
+ const fr=new FileReader();
+ fr.onerror=()=>{imp.error="That file could not be read.";render();};
+ fr.onload=()=>{
+  try{
+   const rows=parseDelimited(String(fr.result));
+   if(rows.length<2){imp.error="The file needs a header row and at least one row of data.";render();return;}
+   imp.fileName=f.name;
+   imp.headers=rows[0].map(h=>String(h).trim());
+   imp.rows=rows.slice(1);
+   imp.classCol=guessCol(imp.headers,["race","ethnic","sex","gender","group","class","language","county","disab","age"]);
+   imp.outcomeCol=guessCol(imp.headers,["outcome","status","decision","result","disposition","approved","determination"]);
+   imp.fav=[]; imp.ref=null; imp.error="";
+   render();
+  }catch(e){ imp.error="Could not read that file. "+e.message; render(); }
+ };
+ fr.readAsText(f);
+}
+
+function guessCol(headers,words){
+ for(let i=0;i<headers.length;i++){
+  const h=headers[i].toLowerCase();
+  for(const w of words) if(h.indexOf(w)!==-1) return i;
+ }
+ return null;
+}
+
+function distinctValues(colIdx){
+ const m=new Map();
+ imp.rows.forEach(r=>{
+  const v=(r[colIdx]==null?"":String(r[colIdx])).trim();
+  if(v) m.set(v,(m.get(v)||0)+1);
+ });
+ return Array.from(m.entries()).sort((a,b)=>b[1]-a[1]);
+}
+
+function setImpCol(which,val){
+ const v=val===""?null:parseInt(val,10);
+ if(which==="class"){ imp.classCol=v; imp.ref=null; }
+ else { imp.outcomeCol=v; imp.fav=[]; }
+ render();
+}
+function toggleFav(v){
+ const i=imp.fav.indexOf(v);
+ if(i===-1) imp.fav.push(v); else imp.fav.splice(i,1);
+ render();
+}
+function setRef(v){ imp.ref=v===""?null:v; render(); }
+
+/* cross-tabulate: every group against the chosen reference group */
+function crossTab(){
+ const tab=new Map(); let used=0, skipped=0;
+ imp.rows.forEach(r=>{
+  const cls=(r[imp.classCol]==null?"":String(r[imp.classCol])).trim();
+  const out=(r[imp.outcomeCol]==null?"":String(r[imp.outcomeCol])).trim();
+  if(!cls||!out){skipped++;return;}
+  if(!tab.has(cls)) tab.set(cls,{pos:0,neg:0});
+  const t=tab.get(cls);
+  if(imp.fav.indexOf(out)!==-1) t.pos++; else t.neg++;
+  used++;
+ });
+ return {tab:tab, used:used, skipped:skipped};
+}
+
+function importReady(){
+ return imp.headers.length>0 && imp.classCol!=null && imp.outcomeCol!=null &&
+        imp.fav.length>0 && imp.ref!=null && imp.classCol!==imp.outcomeCol;
+}
+
+function applyImport(replace){
+ const {tab}=crossTab();
+ const ref=imp.ref;
+ if(!tab.has(ref)) return;
+ const refT=tab.get(ref);
+ const made=[];
+ Array.from(tab.keys()).forEach(k=>{
+  if(k===ref) return;
+  const t=tab.get(k);
+  made.push({label:imp.headers[imp.classCol]+": "+k+" vs "+ref,
+             aName:k, bName:ref,
+             aPos:String(t.pos), aNeg:String(t.neg),
+             bPos:String(refT.pos), bNeg:String(refT.neg)});
+ });
+ if(made.length===0) return;
+ if(replace) state.comparisons=made;
+ else state.comparisons=state.comparisons.filter(c=>compStats(c).ready).concat(made);
+ imp.open=false; resetImport();
+ render();
+}
+
+function renderImport(){
+ if(!imp.open) return `<button class="btn btn-secondary" onclick="toggleImport()">Import from a file</button>`;
+ let h=`<div class="imp-panel"><div class="imp-head"><span class="imp-title">Import outcome data</span><button class="cmp-remove" onclick="toggleImport()">Close</button></div>`;
+ h+=`<p class="hint">Everything is read and counted in this browser. The file is not uploaded anywhere and nothing is transmitted.</p>`;
+ h+=`<div class="imp-req"><div class="imp-req-t">What the file needs</div><ul>
+<li>One row per decision, not pre-totalled counts. The tool does the counting.</li>
+<li>A header row first, with column names.</li>
+<li>One column identifying the protected class, and one holding the outcome. Any other columns are ignored.</li>
+<li>A small set of values in the outcome column, such as Approved and Denied, rather than free text.</li>
+<li>Consistent spelling. Black and black count as two separate groups, and so do Approved and approved.</li>
+<li>Only the columns you need. Leave out names, identifiers, dates of birth, and addresses. The tool reads two columns and nothing else.</li>
+</ul><div class="imp-req-f">CSV, tab, or semicolon delimited. Rows with a blank class or outcome are skipped and reported. If a case can appear more than once, remove duplicates before exporting.</div></div>`;
+ h+=`<input type="file" accept=".csv,.tsv,.txt,text/csv" onchange="onFilePick(this)" class="imp-file">`;
+ if(imp.error) h+=`<p class="imp-error">${esc(imp.error)}</p>`;
+
+ if(imp.headers.length){
+  h+=`<p class="imp-ok">Read ${imp.rows.length} row${imp.rows.length===1?"":"s"} and ${imp.headers.length} columns from ${esc(imp.fileName)}.</p>`;
+  const opts=(sel)=>imp.headers.map((hd,i)=>`<option value="${i}" ${sel===i?"selected":""}>${esc(hd)}</option>`).join("");
+  h+=`<div class="grid-2">
+<div class="field"><label>Protected class column</label><select onchange="setImpCol('class',this.value)"><option value="">Choose a column</option>${opts(imp.classCol)}</select></div>
+<div class="field"><label>Outcome column</label><select onchange="setImpCol('outcome',this.value)"><option value="">Choose a column</option>${opts(imp.outcomeCol)}</select></div></div>`;
+
+  if(imp.classCol!=null && imp.outcomeCol!=null && imp.classCol===imp.outcomeCol){
+   h+=`<p class="imp-error">The protected class and outcome columns must be different.</p>`;
+  } else {
+   if(imp.outcomeCol!=null){
+    const vals=distinctValues(imp.outcomeCol);
+    if(vals.length>25) h+=`<p class="imp-error">That column has ${vals.length} distinct values, which is unlikely to be an outcome. Pick a column with a small set of values.</p>`;
+    else{
+     h+=`<div class="field"><label>Which values count as a favorable outcome?</label><div class="imp-vals">`;
+     vals.forEach(v=>{
+      const on=imp.fav.indexOf(v[0])!==-1;
+      h+=`<button class="imp-chip ${on?"on":""}" onclick="toggleFav(${JSON.stringify(v[0]).replace(/"/g,'&quot;')})">${esc(v[0])} <span class="imp-n">${v[1]}</span></button>`;
+     });
+     h+=`</div><p class="hint">Anything not selected is treated as unfavorable.</p></div>`;
+    }
+   }
+   if(imp.classCol!=null){
+    const vals=distinctValues(imp.classCol);
+    if(vals.length>40) h+=`<p class="imp-error">That column has ${vals.length} distinct values, which is unlikely to be a protected class. Pick a column with fewer groups.</p>`;
+    else{
+     h+=`<div class="field"><label>Reference group</label><select onchange="setRef(this.value)"><option value="">Choose the group to compare against</option>${vals.map(v=>`<option value="${esc(v[0])}" ${imp.ref===v[0]?"selected":""}>${esc(v[0])} (${v[1]} rows)</option>`).join("")}</select><p class="hint">Every other group is compared against this one. Normally the largest group, or the one that has historically received the more favorable outcome.</p></div>`;
+    }
+   }
+  }
+
+  if(importReady()){
+   const ct=crossTab();
+   const ref=imp.ref, refT=ct.tab.get(ref);
+   let rowsH="";
+   Array.from(ct.tab.keys()).forEach(k=>{
+    if(k===ref) return;
+    const t=ct.tab.get(k);
+    const n1=t.pos+t.neg, n2=refT.pos+refT.neg;
+    const rA=n1>0?t.pos/n1:0, rB=n2>0?refT.pos/n2:0;
+    const di=rB>0?(rA<rB?rA/rB:rB/rA):0;
+    rowsH+=`<tr><td>${esc(k)} vs ${esc(ref)}</td><td class="mono">${t.pos} / ${t.neg}</td><td class="mono">${refT.pos} / ${refT.neg}</td><td class="mono">${di.toFixed(3)}</td>${n1<30?`<td class="imp-warn">under 30</td>`:`<td></td>`}</tr>`;
+   });
+   h+=`<div class="imp-preview"><div class="imp-title">Preview</div>
+<table class="cmp-table"><thead><tr><th>Comparison</th><th>Group pos / neg</th><th>Reference pos / neg</th><th>DI ratio</th><th></th></tr></thead><tbody>${rowsH}</tbody></table>
+<p class="hint">${ct.used} row${ct.used===1?"":"s"} counted. ${ct.skipped>0?ct.skipped+" row"+(ct.skipped===1?"":"s")+" skipped for a blank class or outcome value. ":""}${ct.used+ct.skipped} rows read in total.</p>
+<div class="btn-group"><button class="btn btn-primary" onclick="applyImport(true)">Replace comparisons</button><button class="btn btn-secondary" onclick="applyImport(false)">Add to existing</button></div></div>`;
+  }
+ }
+ h+=`</div>`;
+ return h;
+}
+
+render();
 </script>
 </body>
 </html>

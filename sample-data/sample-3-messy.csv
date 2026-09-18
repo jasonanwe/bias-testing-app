@@ -1,0 +1,11 @@
+﻿case_id,race_ethnicity,outcome_status,notes
+3001,White,Approved,"Routine, no issues"
+3002, Black ,Approved,"Second review, escalated"
+3003,White,denied,
+3004,Black,Denied,"Missing documents, returned"
+3005,,Approved,No class recorded
+3006,White,Approved,
+3007,Black,,Outcome pending
+3008,White,"Approved, with conditions","Conditional, 90 days"
+3009,Black,Denied,
+3010,White,Approved,"Quote inside: ""urgent"""
