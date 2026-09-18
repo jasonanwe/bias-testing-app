@@ -4,11 +4,11 @@ A single-file, browser-based tool for running a disparate impact analysis on an 
 
 It walks through seven steps: system details, group data, metrics, statistical significance, context, classification, and report. Everything runs locally in the browser.
 
-## Two builds
+## Builds
 
-`index.html` is the standalone build: one file, no dependencies, no build step. Download it and open it in any modern browser, host it on GitHub Pages, or run it from `file://` on a machine with no network connection.
+1. `index.html` is the standalone build: one file, no dependencies, no build step. Download it and open it in any modern browser, host it on GitHub Pages, or run it from `file://` on a machine with no network connection.
 
-`BiasTestingTool.jsx` is the same tool as a React component, for dropping into an existing app. It exports a default component with no required props and expects React 18 or later and Tailwind CSS for styling.
+2. `BiasTestingTool.jsx` is the same tool as a React component, for dropping into an existing app. It exports a default component with no required props and expects React 18 or later and Tailwind CSS for styling.
 
 Both produce identical results. The standalone build is the one to use if you just want to run a test.
 
